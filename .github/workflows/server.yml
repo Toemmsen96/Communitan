@@ -1,0 +1,25 @@
+# Server CI only. The mod (Communitan/) is NOT built here: it references the game's
+# proprietary assemblies (Assembly-CSharp, Unity, Nakama.dll), which are not available on runners.
+name: server
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: server } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        # Node >= 22: the tests use the built-in WebSocket (nakama-js sockets)
+        with: { node-version: 24, cache: npm, cache-dependency-path: server/package-lock.json }
+      - run: npm ci
+      - run: npm run build
+      - name: Start Nakama + Postgres (dev defaults, no .env)
+        run: docker compose up -d
+      - name: Wait for healthcheck
+        run: |
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:7350/healthcheck && exit 0; sleep 2; done
+          docker compose logs nakama; exit 1
+      - run: npm test
+        env: { NAKAMA_CONTAINER: server-nakama-1 }  # docker compose naming (podman-compose: server_nakama_1)
+      - if: failure()
+        run: docker compose logs nakama | tail -100

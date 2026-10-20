@@ -1,0 +1,92 @@
+# podman-compose up -d   (or docker compose up -d)
+# Secrets come from ./.env (create it with ../tools/server-init.sh or copy .env.example).
+# Without .env the INSECURE public dev defaults below are used (and a warning is logged).
+# HTTPS: set DOMAIN in .env and add --profile https (see docs/HOSTING.md).
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    environment:
+      POSTGRES_DB: nakama
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdb}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+  nakama:
+    image: docker.io/heroiclabs/nakama:3.41.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_ADDR: postgres:${POSTGRES_PASSWORD:-localdb}@postgres:5432/nakama
+      SESSION_ENCRYPTION_KEY: ${SESSION_ENCRYPTION_KEY:-defaultencryptionkey}
+      SESSION_REFRESH_ENCRYPTION_KEY: ${SESSION_REFRESH_ENCRYPTION_KEY:-defaultrefreshencryptionkey}
+      # PUBLIC status key (not a secret): lets the mod's server list read player counts (RPC COMMUNITAN_STATUS) before
+      # login. Every other RPC refuses calls without a session. The mod uses the default; keep it unless you know why.
+      RUNTIME_HTTP_KEY: ${NAKAMA_HTTP_KEY:-catan-public-status}
+      SERVER_KEY: ${NAKAMA_SERVER_KEY:-defaultkey}
+      CONSOLE_USERNAME: ${CONSOLE_USERNAME:-admin}
+      CONSOLE_PASSWORD: ${CONSOLE_PASSWORD:-catanadmin}
+      CONSOLE_SIGNING_KEY: ${CONSOLE_SIGNING_KEY:-defaultsigningkey}
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      # ingame (default): new email accounts get a 6-digit code shown in-game; off: verified immediately (docs/HOSTING.md)
+      CATAN_EMAIL_VERIFICATION: ${CATAN_EMAIL_VERIFICATION:-ingame}
+      # off (default): the game creator's client picks the board/dice/color seeds; seeds: the server picks them;
+      # full: seeds + server dice and server-decided steals/cards, clients need a current mod (docs/design/server-rng.md)
+      CATAN_SERVER_RNG: ${CATAN_SERVER_RNG:-off}
+      # free (default): what a free official account has; owned: + each player's own official purchases (docs/HOSTING.md)
+      CATAN_ENTITLEMENTS: ${CATAN_ENTITLEMENTS:-free}
+    # extra Nakama flags: `command:` items after the first (which becomes $$0), e.g. from an uncommitted override file
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        if [ "$$SESSION_ENCRYPTION_KEY" = defaultencryptionkey ] || [ "$$CONSOLE_PASSWORD" = catanadmin ]; then
+          echo "!!!!! WARNING: INSECURE DEFAULT SECRETS (no server/.env). Anyone can forge sessions and log in to the console. Local development only. Run tools/server-init.sh !!!!!"
+        fi
+        /nakama/nakama migrate up --database.address "$$DB_ADDR"
+        exec /nakama/nakama --config /nakama/data/local.yml --database.address "$$DB_ADDR" \
+          --logger.level "$$LOG_LEVEL" \
+          --session.encryption_key "$$SESSION_ENCRYPTION_KEY" \
+          --session.refresh_encryption_key "$$SESSION_REFRESH_ENCRYPTION_KEY" \
+          --runtime.http_key "$$RUNTIME_HTTP_KEY" \
+          --socket.server_key "$$SERVER_KEY" \
+          --console.username "$$CONSOLE_USERNAME" \
+          --console.password "$$CONSOLE_PASSWORD" \
+          --console.signing_key "$$CONSOLE_SIGNING_KEY" \
+          --runtime.env "CATAN_EMAIL_VERIFICATION=$$CATAN_EMAIL_VERIFICATION" \
+          --runtime.env "CATAN_SERVER_RNG=$$CATAN_SERVER_RNG" \
+          --runtime.env "CATAN_ENTITLEMENTS=$$CATAN_ENTITLEMENTS" \
+          "$$@"
+    volumes:
+      - ./local.yml:/nakama/data/local.yml:ro
+      - ./build:/nakama/data/modules:ro
+      - ./data:/nakama/data/catan:ro
+    ports:
+      # Only 7350 (client API) is public. gRPC and the admin console stay on localhost
+      # (reach them via SSH tunnel). With the https profile set NAKAMA_BIND=127.0.0.1.
+      - "${NAKAMA_BIND:-0.0.0.0}:7350:7350"
+      - "127.0.0.1:7349:7349"
+      - "127.0.0.1:7351:7351"
+  caddy:
+    profiles: ["https"]
+    image: docker.io/library/caddy:2
+    restart: unless-stopped
+    depends_on:
+      - nakama
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

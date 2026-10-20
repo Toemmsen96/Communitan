@@ -1,0 +1,4 @@
+# Automatic Let's Encrypt for $DOMAIN (ports 80 + 443 must be reachable). WebSocket upgrades pass through.
+{$DOMAIN} {
+	reverse_proxy nakama:7350
+}

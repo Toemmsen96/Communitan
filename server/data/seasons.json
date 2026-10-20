@@ -1,0 +1,19 @@
+{
+  "_comment": "Seasons served by SEASON_*. Empty list disables seasons. state is derived from date_from/date_to (date_to inclusive). Season games = auto matches with gameInfo.isSeason; season ELO = same increase as the normal ELO, starting at 1000. reward percentage = top X% of the leaderboard; reward3 = rest.",
+  "seasons": [
+    {
+      "id": "Season1",
+      "name": "Season 1",
+      "description": "The first season of this server. Join for free, climb the leaderboard.",
+      "date_from": "2026-01-01",
+      "date_to": "2099-12-31",
+      "expansion": "CatanBaseGame",
+      "placementMatches": 3,
+      "participationFee": 0,
+      "participationFeeGold": 0,
+      "reward1": { "percentage": 10, "percentageCrown": 1, "scrolls": 3, "suns": 0 },
+      "reward2": { "percentage": 50, "scrolls": 2, "suns": 0 },
+      "reward3": { "scrolls": 1, "suns": 0 }
+    }
+  ]
+}

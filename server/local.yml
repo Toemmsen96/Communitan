@@ -1,0 +1,16 @@
+name: communitan
+logger:
+  level: DEBUG
+  stdout: true
+runtime:
+  js_entrypoint: index.js
+  env:
+    - "CATAN_DATA_DIR=/nakama/data/catan"
+session:
+  token_expiry_sec: 604800
+  refresh_token_expiry_sec: 2592000
+  single_socket: true
+# Secrets (session keys, server key, console credentials) are passed as flags by compose.yml from .env.
+matchmaker:
+  interval_sec: 5
+  max_intervals: 6

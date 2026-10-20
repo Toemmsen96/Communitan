@@ -1,0 +1,1772 @@
+{
+ "BoardPieces": [
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_BASE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "url2d": "board/pieces/board_piece_base.default.jpg",
+    "url3d": "board/pieces/board_piece_base.default"
+   }
+  },
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_VIKING",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "setCollection": "BUNDLE_VIKING_BOARD",
+    "url2d": "board/pieces/board_piece_viking.default.jpg",
+    "url3d": "board/pieces/board_piece_viking.default"
+   }
+  },
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_ORIENT",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_ORIENT_BOARD",
+    "url2d": "board/pieces/board_piece_orient.default.jpg",
+    "url3d": "board/pieces/board_piece_orient.default"
+   }
+  },
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_FANTASY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_FANTASY_BOARD",
+    "url2d": "board/pieces/board_piece_fantasy.default.jpg",
+    "url3d": "board/pieces/board_piece_fantasy.default"
+   }
+  },
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_ASIA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_ASIA_BOARD",
+    "url2d": "board/pieces/board_piece_asia.default.jpg",
+    "url3d": "board/pieces/board_piece_asia.default"
+   }
+  },
+  {
+   "Category": "BoardPieces",
+   "ID": "BOARD_PIECE_JESTER",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardPieces",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_JESTER_BOARD",
+    "url2d": "board/pieces/board_piece_jester.default.jpg",
+    "url3d": "board/pieces/board_piece_jester.default"
+   }
+  }
+ ],
+ "BoardTable": [
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_BASE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "url2d": "board/table/board_table_base.default.jpg",
+    "url3d": "board/table/board_table_base.default"
+   }
+  },
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_VIKING",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "setCollection": "BUNDLE_VIKING_BOARD",
+    "url2d": "board/table/board_table_viking.default.jpg",
+    "url3d": "board/table/board_table_viking.default"
+   }
+  },
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_ORIENT",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_ORIENT_BOARD",
+    "url2d": "board/table/board_table_orient.default.jpg",
+    "url3d": "board/table/board_table_orient.default"
+   }
+  },
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_FANTASY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_FANTASY_BOARD",
+    "url2d": "board/table/board_table_fantasy.default.jpg",
+    "url3d": "board/table/board_table_fantasy.default"
+   }
+  },
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_ASIA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_ASIA_BOARD",
+    "url2d": "board/table/board_table_asia.default.jpg",
+    "url3d": "board/table/board_table_asia.default"
+   }
+  },
+  {
+   "Category": "BoardTable",
+   "ID": "BOARD_TABLE_JESTER",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTable",
+    "defaultColor": "COLOR_BLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "setCollection": "BUNDLE_JESTER_BOARD",
+    "url2d": "board/table/board_table_jester.default.jpg",
+    "url3d": "board/table/board_table_jester.default"
+   }
+  }
+ ],
+ "BoardTile": [
+  {
+   "Category": "BoardTile",
+   "ID": "BOARD_TILE_BASE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTile",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "url2d": "board/tile/board_tile_base.default.jpg",
+    "url3d": "board/tile/board_tile_base.default"
+   }
+  },
+  {
+   "Category": "BoardTile",
+   "ID": "BOARD_TILE_ORIENT",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTile",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "setCollection": "BUNDLE_ORIENT_BOARD",
+    "url2d": "board/tile/board_tile_orient.default.jpg",
+    "url3d": "board/tile/board_tile_orient.default"
+   }
+  },
+  {
+   "Category": "BoardTile",
+   "ID": "BOARD_TILE_FANTASY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTile",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "setCollection": "BUNDLE_FANTASY_BOARD",
+    "url2d": "board/tile/board_tile_fantasy.default.jpg",
+    "url3d": "board/tile/board_tile_fantasy.default"
+   }
+  },
+  {
+   "Category": "BoardTile",
+   "ID": "BOARD_TILE_ASIA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "BoardTile",
+    "defaultColor": "COLOR_PLAYER_BLUE",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "setCollection": "BUNDLE_ASIA_BOARD",
+    "url2d": "board/tile/board_tile_asia.default.jpg",
+    "url3d": "board/tile/board_tile_asia.default"
+   }
+  }
+ ],
+ "Color": [
+  {
+   "Category": "Color",
+   "ID": "COLOR_WHEATBLOND",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "be9356",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_WALNUTBROWN_EYE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "834f37",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_WALNUTBROWN",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "542d1b",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_TURQUOISE",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "00FBFF",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_TERRACOTTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "ac5640",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_SAPPHIREBLUE_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "4C8ED9",
+    "lvlRequirement": 15
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_SAPPHIREBLUE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "56a4ff",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PURPLE",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "E623A6",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_RED",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "F10000"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_PURPLE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "9F42D9"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_PINK",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "FF2FDC"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_ORANGE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "ee9d26"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_GREEN",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "4eb636"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_CREMEWHITE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "a0a0a0"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_BROWN",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "A84A1C"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PLAYER_BLUE",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "BoardPieces"
+    ],
+    "colorValue": "3888a6"
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_ORANGE",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "E54703",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_LAVENDAR_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "EA9FFF",
+    "lvlRequirement": 15
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_GREENISH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "B8D154",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_GRAY_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "5C5B5C",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_GARNET_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "E62333",
+    "lvlRequirement": 15
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_EMERALDGREEN_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "69954c",
+    "lvlRequirement": 15
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_EMERALDGREEN",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "009050",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_EBONY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Skin"
+    ],
+    "colorValue": "83604f",
+    "lvlRequirement": 0,
+    "priority": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_CYAN",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "169889",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_CARBONBLACK",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "1c1914",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_BLUE_HAIR",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Beard"
+    ],
+    "colorValue": "1E2956",
+    "lvlRequirement": 23
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_ASHGREY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Hair",
+     "Eye",
+     "Beard"
+    ],
+    "colorValue": "9d9891",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_AMBERYELLOW_CLOTH",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Cloth"
+    ],
+    "colorValue": "FFC429",
+    "lvlRequirement": 15
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_AMBERYELLOW",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Eye"
+    ],
+    "colorValue": "CEA44B",
+    "lvlRequirement": 0
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_MAHOGANY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Skin"
+    ],
+    "colorValue": "a97358",
+    "lvlRequirement": 0,
+    "priority": 1
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_HONEY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Skin"
+    ],
+    "colorValue": "e19975",
+    "lvlRequirement": 0,
+    "priority": 2
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_IVORY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Skin"
+    ],
+    "colorValue": "f7af93",
+    "lvlRequirement": 0,
+    "priority": 3
+   }
+  },
+  {
+   "Category": "Color",
+   "ID": "COLOR_PORCELAIN",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Color",
+    "colorCategories": [
+     "Skin"
+    ],
+    "colorValue": "ffcab5",
+    "lvlRequirement": 0,
+    "priority": 4
+   }
+  }
+ ],
+ "Item": [
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_WOLF",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "sex": "Pet",
+    "url2d": "pets/pet_wolf.default.jpg",
+    "url3d": "pets/pet_wolf.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_TOURNAMENT_TROPHY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "sex": "Pet",
+    "url2d": "pets/pet_trophy.default.jpg",
+    "url3d": "pets/pet_trophy.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_SHEEP",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "setCollection": "COLLECTION_PET_SHEEP",
+    "sex": "Pet",
+    "url2d": "pets/pet_sheep.default.jpg",
+    "url3d": "pets/pet_sheep.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_GAUCHO",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "sex": "Pet",
+    "url2d": "pets/pet_gaucho.default.jpg",
+    "url3d": "pets/pet_gaucho.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_PIG",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "sex": "Pet",
+    "url2d": "pets/pet_pig.default.jpg",
+    "url3d": "pets/pet_pig.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_DONKEY",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "sex": "Pet",
+    "url2d": "pets/pet_donkey.default.jpg",
+    "url3d": "pets/pet_donkey.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_AL_PACACINO",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "setCollection": "COLLECTION_PET_AL_PACACINO",
+    "sex": "Pet",
+    "url2d": "pets/pet_al_pacacino.default.jpg",
+    "url3d": "pets/pet_al_pacacino.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_PET_DRAGON",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Species",
+    "setCollection": "COLLECTION_PET_DRAGON",
+    "sex": "Pet",
+    "url2d": "pets/pet_dragon.default.jpg",
+    "url3d": "pets/pet_dragon.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_01.default.jpg",
+    "url3d": "male/hair/male_hair_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_EMERALDGREEN_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_01.default.jpg",
+    "url3d": "male/cloth/male_cloth_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_BEARD1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_01.default.jpg",
+    "url3d": "male/beard/male_beard_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_01.default.jpg",
+    "url3d": "female/hair/female_hair_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_01.default.jpg",
+    "url3d": "female/cloth/female_cloth_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_QUIVER",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 0,
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_quiver.default.jpg",
+    "url3d": "bagpack/bagpack_quiver.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_HAIR2",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_02.default.jpg",
+    "url3d": "male/hair/male_hair_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_CLOTH2",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_EMERALDGREEN_CLOTH",
+    "lvlRequirement": 7,
+    "priority": 1,
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_02.default.jpg",
+    "url3d": "male/cloth/male_cloth_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_BEARD2",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_02.default.jpg",
+    "url3d": "male/beard/male_beard_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR2",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 1,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_02.default.jpg",
+    "url3d": "female/hair/female_hair_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_CLOTH2",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_EMERALDGREEN_CLOTH",
+    "lvlRequirement": 7,
+    "priority": 1,
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_02.default.jpg",
+    "url3d": "female/cloth/female_cloth_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_SWORD",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 4,
+    "priority": 1,
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_sword.default.jpg",
+    "url3d": "bagpack/bagpack_sword.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_HAIR3",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_03.default.jpg",
+    "url3d": "male/hair/male_hair_03.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_CLOTH3",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 20,
+    "priority": 2,
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_03.default.jpg",
+    "url3d": "male/cloth/male_cloth_03.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_BEARD3",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_03.default.jpg",
+    "url3d": "male/beard/male_beard_03.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR3",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 2,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_03.default.jpg",
+    "url3d": "female/hair/female_hair_03.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_CLOTH3",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_LAVENDAR_CLOTH",
+    "lvlRequirement": 20,
+    "priority": 2,
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_03.default.jpg",
+    "url3d": "female/cloth/female_cloth_03.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_STAFF",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 12,
+    "priority": 2,
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_staff.default.jpg",
+    "url3d": "bagpack/bagpack_staff.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_SEAFARER_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_SAPPHIREBLUE_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 3,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_seafarer.default.jpg",
+    "url3d": "male/cloth/male_cloth_seafarer.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_HAIR4",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 3,
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_04.default.jpg",
+    "url3d": "male/hair/male_hair_04.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_BEARD4",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 3,
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_04.default.jpg",
+    "url3d": "male/beard/male_beard_04.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_SEAFARER_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_SAPPHIREBLUE_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 3,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_seafarer.default.jpg",
+    "url3d": "female/cloth/female_cloth_seafarer.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR4",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 3,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_04.default.jpg",
+    "url3d": "female/hair/female_hair_04.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_LUTE",
+   "equipDef": {
+    "isLocked": true
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 15,
+    "priority": 3,
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_lute.default.jpg",
+    "url3d": "bagpack/bagpack_lute.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_CLOTH_JESTER",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_jester.default.jpg",
+    "url3d": "female/cloth/female_cloth_jester.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_CLOTH_JESTER",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_jester.default.jpg",
+    "url3d": "male/cloth/male_cloth_jester.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_SEAFARER_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_seafarer_01.default.jpg",
+    "url3d": "male/hair/male_hair_seafarer_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_SEAFARER_BEARD1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_seafarer.default.jpg",
+    "url3d": "male/beard/male_beard_seafarer.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_KNIGHT_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_knight.default.jpg",
+    "url3d": "male/cloth/male_cloth_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_KNIGHT_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_knight.default.jpg",
+    "url3d": "female/cloth/female_cloth_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR5",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_05.default.jpg",
+    "url3d": "female/hair/female_hair_05.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_KNIGHT",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_knight.default.jpg",
+    "url3d": "bagpack/bagpack_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAT_SANTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_santa.default.jpg",
+    "url3d": "female/hair/female_hair_santa.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_HAT_SANTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_santa.default.jpg",
+    "url3d": "male/hair/male_hair_santa.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_CLOTH_SANTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Female",
+    "url2d": "female/cloth/female_ cloth_santa.default.jpg",
+    "url3d": "female/cloth/female_cloth_santa.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_CLOTH_SANTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_santa.default.jpg",
+    "url3d": "male/cloth/male_cloth_santa.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_SANTA",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 4,
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_santa.default.jpg",
+    "url3d": "bagpack/bagpack_santa.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_VIKING_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Male",
+    "url2d": "male/cloth/male_cloth_viking.default.jpg",
+    "url3d": "male/cloth/male_cloth_viking.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_SEAFARER_HAIR2",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_seafarer_02.default.jpg",
+    "url3d": "male/hair/male_hair_seafarer_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_KNIGHT_BEARD1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_knight.default.jpg",
+    "url3d": "male/beard/male_beard_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_VIKING_CLOTH1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Cloth",
+    "defaultColor": "COLOR_GARNET_CLOTH",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Female",
+    "url2d": "female/cloth/female_cloth_viking.default.jpg",
+    "url3d": "female/cloth/female_cloth_viking.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR6",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_06.default.jpg",
+    "url3d": "female/hair/female_hair_06.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_BAGPACK_VIKING",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Back",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 5,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Both",
+    "url2d": "bagpack/bagpack_viking.default.jpg",
+    "url3d": "bagpack/bagpack_viking.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_VIKING_BEARD1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Beard",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 6,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Male",
+    "url2d": "male/beard/male_beard_viking.default.jpg",
+    "url3d": "male/beard/male_beard_viking.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_KNIGHT_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 6,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_knight.default.jpg",
+    "url3d": "male/hair/male_hair_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR7",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 6,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_07.default.jpg",
+    "url3d": "female/hair/female_hair_07.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_VIKING_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 7,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_viking.default.jpg",
+    "url3d": "male/hair/male_hair_viking.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_HAIR8",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 7,
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_08.default.jpg",
+    "url3d": "female/hair/female_hair_08.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_SEAFARER_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 8,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_seafarer_01.default.jpg",
+    "url3d": "female/hair/female_hair_seafarer_01.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_SEAFARER_HAIR2",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 9,
+    "setCollection": "COLLECTION_SEAFARER",
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_seafarer_02.default.jpg",
+    "url3d": "female/hair/female_hair_seafarer_02.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_MALE_JESTER_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 10,
+    "setCollection": "COLLECTION_JESTER",
+    "sex": "Male",
+    "url2d": "male/hair/male_hair_jester.default.jpg",
+    "url3d": "male/hair/male_hair_jester.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_JESTER_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 10,
+    "setCollection": "COLLECTION_JESTER",
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_jester.default.jpg",
+    "url3d": "female/hair/female_hair_jester.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_KNIGHT_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 10,
+    "setCollection": "COLLECTION_KNIGHT",
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_knight.default.jpg",
+    "url3d": "female/hair/female_hair_knight.default"
+   }
+  },
+  {
+   "Category": "Item",
+   "ID": "ITEM_FEMALE_VIKING_HAIR1",
+   "equipDef": {
+    "isLocked": false
+   },
+   "itemDef": {
+    "category": "Hair",
+    "defaultColor": "COLOR_CARBONBLACK",
+    "lvlRequirement": 0,
+    "priority": 11,
+    "setCollection": "COLLECTION_VIKING",
+    "sex": "Female",
+    "url2d": "female/hair/female_hair_viking.default.jpg",
+    "url3d": "female/hair/female_hair_viking.default"
+   }
+  }
+ ]
+}

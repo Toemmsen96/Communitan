@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["es2015"],
+    "module": "es2015",
+    "rootDir": "./src",
+    "outDir": "./build/.tsc",
+    "strict": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "types": ["nakama-runtime"]
+  },
+  "include": ["src/**/*.ts"]
+}

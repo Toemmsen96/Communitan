@@ -1,0 +1,1014 @@
+{
+ "categories": [
+  "Coins",
+  "Expansion",
+  "AvatarCollection",
+  "Bundle",
+  "BoardTable",
+  "BoardPieces",
+  "BoardTile"
+ ],
+ "external": [
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_1700",
+   "assetbundlePath": "shop/products",
+   "sortId": 5
+  },
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_200",
+   "assetbundlePath": "shop/products",
+   "sortId": 1
+  },
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_300",
+   "assetbundlePath": "shop/products",
+   "sortId": 2
+  },
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_3000",
+   "assetbundlePath": "shop/products",
+   "sortId": 6
+  },
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_500",
+   "assetbundlePath": "shop/products",
+   "sortId": 3
+  },
+  {
+   "Category": "Coins",
+   "ID": "cu_coins_v2_900",
+   "assetbundlePath": "shop/products",
+   "sortId": 4
+  }
+ ],
+ "prices": [],
+ "products": {
+  "AvatarCollection": [
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_KNIGHT",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_KNIGHT",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   },
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_PET_AL_PACACINO",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_PET_AL_PACACINO",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   },
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_PET_DRAGON",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_PET_DRAGON",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   },
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_PET_SHEEP",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_PET_SHEEP",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   },
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_SEAFARER",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_SEAFARER",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   },
+   {
+    "Category": "AvatarCollection",
+    "ID": "COLLECTION_VIKING",
+    "assetbundlePath": "shop/products",
+    "equipDef": {
+     "isLocked": false
+    },
+    "isNewProduct": false,
+    "itemDef": {
+     "category": "Collection",
+     "defaultColor": "COLOR_BLACK",
+     "lvlRequirement": 0,
+     "setCollection": "COLLECTION_VIKING",
+     "sex": "Both",
+     "url2d": "male/hair/male_hair_01.default.jpg",
+     "url3d": "male/hair/male_hair_01.default"
+    }
+   }
+  ],
+  "Bundle": [
+   {
+    "BundleProducts": [
+     {
+      "Category": "Expansion",
+      "ID": "CatanCitiesAndKnights",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 3
+     },
+     {
+      "Category": "Expansion",
+      "ID": "CatanSeafarer",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 2
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_SHOP_EXPANSIONS",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 1
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "Expansion",
+      "ID": "CatanBaseGame",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 1
+     },
+     {
+      "Category": "Expansion",
+      "ID": "CatanCitiesAndKnights",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 3
+     },
+     {
+      "Category": "Expansion",
+      "ID": "CatanSeafarer",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 2
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_SHOP_BOARDGAME",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 2
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "BoardTable",
+      "ID": "BOARD_TABLE_FANTASY",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardTable",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "priority": 2,
+       "setCollection": "BUNDLE_FANTASY_BOARD",
+       "url2d": "board/table/board_table_fantasy.default.jpg",
+       "url3d": "board/table/board_table_fantasy.default"
+      }
+     },
+     {
+      "Category": "BoardPieces",
+      "ID": "BOARD_PIECE_FANTASY",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardPieces",
+       "defaultColor": "COLOR_PLAYER_BLUE",
+       "lvlRequirement": 0,
+       "priority": 2,
+       "setCollection": "BUNDLE_FANTASY_BOARD",
+       "url2d": "board/pieces/board_piece_fantasy.default.jpg",
+       "url3d": "board/pieces/board_piece_fantasy.default"
+      }
+     },
+     {
+      "Category": "BoardTile",
+      "ID": "BOARD_TILE_FANTASY",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardTile",
+       "defaultColor": "COLOR_PLAYER_BLUE",
+       "lvlRequirement": 0,
+       "priority": 1,
+       "setCollection": "BUNDLE_FANTASY_BOARD",
+       "url2d": "board/tile/board_tile_fantasy.default.jpg",
+       "url3d": "board/tile/board_tile_fantasy.default"
+      }
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_FANTASY_BOARD",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 12
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "AvatarCollection",
+      "ID": "COLLECTION_KNIGHT",
+      "assetbundlePath": "shop/products",
+      "equipDef": {
+       "isLocked": false
+      },
+      "isNewProduct": false,
+      "itemDef": {
+       "category": "Collection",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Both",
+       "url2d": "male/hair/male_hair_01.default.jpg",
+       "url3d": "male/hair/male_hair_01.default"
+      }
+     },
+     {
+      "Category": "AvatarCollection",
+      "ID": "COLLECTION_SEAFARER",
+      "assetbundlePath": "shop/products",
+      "equipDef": {
+       "isLocked": false
+      },
+      "isNewProduct": false,
+      "itemDef": {
+       "category": "Collection",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Both",
+       "url2d": "male/hair/male_hair_01.default.jpg",
+       "url3d": "male/hair/male_hair_01.default"
+      }
+     },
+     {
+      "Category": "AvatarCollection",
+      "ID": "COLLECTION_VIKING",
+      "assetbundlePath": "shop/products",
+      "equipDef": {
+       "isLocked": false
+      },
+      "isNewProduct": false,
+      "itemDef": {
+       "category": "Collection",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Both",
+       "url2d": "male/hair/male_hair_01.default.jpg",
+       "url3d": "male/hair/male_hair_01.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_BAGPACK_KNIGHT",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Back",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 4,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Both",
+       "url2d": "bagpack/bagpack_knight.default.jpg",
+       "url3d": "bagpack/bagpack_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_BAGPACK_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Back",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Both",
+       "url2d": "bagpack/bagpack_viking.default.jpg",
+       "url3d": "bagpack/bagpack_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_KNIGHT_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 4,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Female",
+       "url2d": "female/cloth/female_cloth_knight.default.jpg",
+       "url3d": "female/cloth/female_cloth_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_KNIGHT_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 10,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Female",
+       "url2d": "female/hair/female_hair_knight.default.jpg",
+       "url3d": "female/hair/female_hair_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_SEAFARER_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_SAPPHIREBLUE_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 3,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Female",
+       "url2d": "female/cloth/female_cloth_seafarer.default.jpg",
+       "url3d": "female/cloth/female_cloth_seafarer.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_SEAFARER_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 8,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Female",
+       "url2d": "female/hair/female_hair_seafarer_01.default.jpg",
+       "url3d": "female/hair/female_hair_seafarer_01.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_SEAFARER_HAIR2",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 9,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Female",
+       "url2d": "female/hair/female_hair_seafarer_02.default.jpg",
+       "url3d": "female/hair/female_hair_seafarer_02.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_VIKING_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Female",
+       "url2d": "female/cloth/female_cloth_viking.default.jpg",
+       "url3d": "female/cloth/female_cloth_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_KNIGHT_BEARD1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Beard",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Male",
+       "url2d": "male/beard/male_beard_knight.default.jpg",
+       "url3d": "male/beard/male_beard_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_KNIGHT_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 4,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Male",
+       "url2d": "male/cloth/male_cloth_knight.default.jpg",
+       "url3d": "male/cloth/male_cloth_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_KNIGHT_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 6,
+       "setCollection": "COLLECTION_KNIGHT",
+       "sex": "Male",
+       "url2d": "male/hair/male_hair_knight.default.jpg",
+       "url3d": "male/hair/male_hair_knight.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_SEAFARER_BEARD1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Beard",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 4,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Male",
+       "url2d": "male/beard/male_beard_seafarer.default.jpg",
+       "url3d": "male/beard/male_beard_seafarer.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_SEAFARER_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_SAPPHIREBLUE_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 3,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Male",
+       "url2d": "male/cloth/male_cloth_seafarer.default.jpg",
+       "url3d": "male/cloth/male_cloth_seafarer.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_SEAFARER_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 4,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Male",
+       "url2d": "male/hair/male_hair_seafarer_01.default.jpg",
+       "url3d": "male/hair/male_hair_seafarer_01.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_SEAFARER_HAIR2",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_SEAFARER",
+       "sex": "Male",
+       "url2d": "male/hair/male_hair_seafarer_02.default.jpg",
+       "url3d": "male/hair/male_hair_seafarer_02.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_BEARD1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Beard",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 6,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/beard/male_beard_viking.default.jpg",
+       "url3d": "male/beard/male_beard_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/cloth/male_cloth_viking.default.jpg",
+       "url3d": "male/cloth/male_cloth_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 7,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/hair/male_hair_viking.default.jpg",
+       "url3d": "male/hair/male_hair_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_VIKING_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 11,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Female",
+       "url2d": "female/hair/female_hair_viking.default.jpg",
+       "url3d": "female/hair/female_hair_viking.default"
+      }
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_SHOP_AVATAR",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 13
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "Expansion",
+      "ID": "CatanBaseGame",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 1
+     },
+     {
+      "Category": "Expansion",
+      "ID": "RivalsBaseGame",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 5
+     },
+     {
+      "Category": "Expansion",
+      "ID": "CatanRiseOfTheInkas",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 4
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_SHOP_STARTER",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "BoardPieces",
+      "ID": "BOARD_PIECE_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardPieces",
+       "defaultColor": "COLOR_PLAYER_BLUE",
+       "lvlRequirement": 0,
+       "priority": 1,
+       "setCollection": "BUNDLE_VIKING_BOARD",
+       "url2d": "board/pieces/board_piece_viking.default.jpg",
+       "url3d": "board/pieces/board_piece_viking.default"
+      }
+     },
+     {
+      "BundleProducts": [
+       {
+        "Category": "BoardPieces",
+        "ID": "BOARD_PIECE_VIKING",
+        "equipDef": {
+         "isLocked": false
+        },
+        "itemDef": {
+         "category": "BoardPieces",
+         "defaultColor": "COLOR_PLAYER_BLUE",
+         "lvlRequirement": 0,
+         "priority": 1,
+         "setCollection": "BUNDLE_VIKING_BOARD",
+         "url2d": "board/pieces/board_piece_viking.default.jpg",
+         "url3d": "board/pieces/board_piece_viking.default"
+        }
+       },
+       {
+        "Category": "BoardTable",
+        "ID": "BOARD_TABLE_VIKING",
+        "equipDef": {
+         "isLocked": false
+        },
+        "itemDef": {
+         "category": "BoardTable",
+         "defaultColor": "COLOR_BLACK",
+         "lvlRequirement": 0,
+         "priority": 1,
+         "setCollection": "BUNDLE_VIKING_BOARD",
+         "url2d": "board/table/board_table_viking.default.jpg",
+         "url3d": "board/table/board_table_viking.default"
+        }
+       }
+      ],
+      "Category": "Bundle",
+      "ID": "BUNDLE_VIKING_BOARD",
+      "assetbundlePath": "shop/products",
+      "isNewProduct": false,
+      "sortId": 12
+     },
+     {
+      "Category": "AvatarCollection",
+      "ID": "COLLECTION_VIKING",
+      "assetbundlePath": "shop/products",
+      "equipDef": {
+       "isLocked": false
+      },
+      "isNewProduct": false,
+      "itemDef": {
+       "category": "Collection",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Both",
+       "url2d": "male/hair/male_hair_01.default.jpg",
+       "url3d": "male/hair/male_hair_01.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_BAGPACK_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Back",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Both",
+       "url2d": "bagpack/bagpack_viking.default.jpg",
+       "url3d": "bagpack/bagpack_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_VIKING_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Female",
+       "url2d": "female/cloth/female_cloth_viking.default.jpg",
+       "url3d": "female/cloth/female_cloth_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_FEMALE_VIKING_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 11,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Female",
+       "url2d": "female/hair/female_hair_viking.default.jpg",
+       "url3d": "female/hair/female_hair_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_BEARD1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Beard",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 6,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/beard/male_beard_viking.default.jpg",
+       "url3d": "male/beard/male_beard_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_CLOTH1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Cloth",
+       "defaultColor": "COLOR_GARNET_CLOTH",
+       "lvlRequirement": 0,
+       "priority": 5,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/cloth/male_cloth_viking.default.jpg",
+       "url3d": "male/cloth/male_cloth_viking.default"
+      }
+     },
+     {
+      "Category": "Item",
+      "ID": "ITEM_MALE_VIKING_HAIR1",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "Hair",
+       "defaultColor": "COLOR_CARBONBLACK",
+       "lvlRequirement": 0,
+       "priority": 7,
+       "setCollection": "COLLECTION_VIKING",
+       "sex": "Male",
+       "url2d": "male/hair/male_hair_viking.default.jpg",
+       "url3d": "male/hair/male_hair_viking.default"
+      }
+     },
+     {
+      "Category": "BoardTable",
+      "ID": "BOARD_TABLE_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardTable",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "priority": 1,
+       "setCollection": "BUNDLE_VIKING_BOARD",
+       "url2d": "board/table/board_table_viking.default.jpg",
+       "url3d": "board/table/board_table_viking.default"
+      }
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_VIKING_COMPLETE",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 11
+   },
+   {
+    "BundleProducts": [
+     {
+      "Category": "BoardPieces",
+      "ID": "BOARD_PIECE_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardPieces",
+       "defaultColor": "COLOR_PLAYER_BLUE",
+       "lvlRequirement": 0,
+       "priority": 1,
+       "setCollection": "BUNDLE_VIKING_BOARD",
+       "url2d": "board/pieces/board_piece_viking.default.jpg",
+       "url3d": "board/pieces/board_piece_viking.default"
+      }
+     },
+     {
+      "Category": "BoardTable",
+      "ID": "BOARD_TABLE_VIKING",
+      "equipDef": {
+       "isLocked": false
+      },
+      "itemDef": {
+       "category": "BoardTable",
+       "defaultColor": "COLOR_BLACK",
+       "lvlRequirement": 0,
+       "priority": 1,
+       "setCollection": "BUNDLE_VIKING_BOARD",
+       "url2d": "board/table/board_table_viking.default.jpg",
+       "url3d": "board/table/board_table_viking.default"
+      }
+     }
+    ],
+    "Category": "Bundle",
+    "ID": "BUNDLE_VIKING_BOARD",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 12
+   }
+  ],
+  "Coins": [
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_200",
+    "assetbundlePath": "shop/products",
+    "sortId": 1
+   },
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_300",
+    "assetbundlePath": "shop/products",
+    "sortId": 2
+   },
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_500",
+    "assetbundlePath": "shop/products",
+    "sortId": 3
+   },
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_900",
+    "assetbundlePath": "shop/products",
+    "sortId": 4
+   },
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_1700",
+    "assetbundlePath": "shop/products",
+    "sortId": 5
+   },
+   {
+    "Category": "Coins",
+    "ID": "cu_coins_v2_3000",
+    "assetbundlePath": "shop/products",
+    "sortId": 6
+   }
+  ],
+  "Expansion": [
+   {
+    "Category": "Expansion",
+    "ID": "CatanExplorers",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 1
+   },
+   {
+    "Category": "Expansion",
+    "ID": "CatanBaseGame",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 1
+   },
+   {
+    "Category": "Expansion",
+    "ID": "CatanSeafarer",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 2
+   },
+   {
+    "Category": "Expansion",
+    "ID": "CatanCitiesAndKnights",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 3
+   },
+   {
+    "Category": "Expansion",
+    "ID": "CatanRiseOfTheInkas",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 4
+   },
+   {
+    "Category": "Expansion",
+    "ID": "RivalsBaseGame",
+    "assetbundlePath": "shop/products",
+    "isNewProduct": false,
+    "sortId": 5
+   }
+  ]
+ }
+}
