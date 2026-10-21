@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "requestDomains": ["gameanalytics.com", "cloud.unity3d.com", "analytics.unity3d.com", "services.api.unity.com"],
+      "initiatorDomains": ["catanuniverse.com"]
+    }
+  }
+]

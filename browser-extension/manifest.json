@@ -19,8 +19,21 @@
     }
   },
   "permissions": [
-    "storage"
+    "storage",
+    "declarativeNetRequest"
   ],
+  "background": {
+    "script": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "analytics",
+        "enabled": false,
+        "path": "rules/analytics.json"
+      }
+    ]
+  },
   "content_scripts": [
     {
       "matches": [
@@ -48,7 +61,11 @@
     "gecko": {
       "id": "communitan@toemmsen96",
       "strict_min_version": "128.0",
-      "data_collection_permissions": { "required": ["none"] }
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
     }
   }
 }

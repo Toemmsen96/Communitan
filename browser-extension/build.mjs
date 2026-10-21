@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds dist/chrome and dist/firefox (unpacked) + zips from src/ and manifest.json. No dependencies.
+// Builds dist/chrome and dist/firefox (unpacked) + zips from src/, icons/, rules/ and manifest.json. No dependencies.
 // Usage: node build.mjs [version]   (default: manifest.json version)
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -29,7 +29,7 @@ for (const [name, patch] of Object.entries(targets)) {
   const out = join(dist, name);
   mkdirSync(out, { recursive: true });
   cpSync(join(root, "src"), out, { recursive: true });
-  cpSync(join(root, "icons"), join(out, "icons"), { recursive: true });
+  for (const dir of ["icons", "rules"]) cpSync(join(root, dir), join(out, dir), { recursive: true });
   writeFileSync(join(out, "manifest.json"), JSON.stringify(patch(structuredClone(base)), null, 2) + "\n");
   const zip = join(dist, `communitan-${name}-${base.version}.zip`);
   execFileSync("zip", ["-qr", zip, "."], { cwd: out });
