@@ -88,9 +88,19 @@ namespace Communitan
         [HarmonyPostfix]
         private static void AddCaps(GSRequest request)
         {
-            if (PatchesOk && ServerList.IsCustomSelected && request != null && request.GetString("communitanCaps") == null)
+            if (!ServerList.IsCustomSelected || request == null || request.GetString("communitanCaps") != null)
             {
-                request.AddString("communitanCaps", Caps);
+                return;
+            }
+            // comma list: server dice (all RNG patches applied) + game modes (rules/ switches applied, GameModes.cs)
+            string caps = PatchesOk ? Caps : null;
+            if (GameModes.PatchesOk)
+            {
+                caps = caps == null ? GameModes.Caps : caps + "," + GameModes.Caps;
+            }
+            if (caps != null)
+            {
+                request.AddString("communitanCaps", caps);
             }
         }
 

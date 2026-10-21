@@ -4,7 +4,7 @@
 # instance 2 mid-game (reconnect test), then summarizes both traffic logs, Player.logs and the server log.
 # Usage: tools/mp-smoke.sh [--timeout SEC] [--mode QuickMatch|Lobby] [--timescale X] [--reconnect AFTER_SEC] [--keep]
 #                         [--summary-only] [--server URL] [--key KEY] [--first N] [--container NAME] [--players N]
-#                         [--expansion NAME]
+#                         [--expansion NAME] [--game-mode ID] [--ui]
 #   --reconnect N  N seconds after both clients started the game, kill instance 2, relaunch it, expect a rejoin
 #   --keep         leave both games running at the end
 #   --summary-only only print the summary of the last run
@@ -13,13 +13,17 @@
 #   --container C  Nakama container for the server log summary (default server_nakama_1)
 #   --players N    N clients (instances first..first+N-1, QuickMatch only; default 2)
 #   --expansion E  expansion of the quick match (ExpansionsEnum name, e.g. CatanCitiesAndKnights; default base game)
+#   --game-mode ID custom game mode of the server (docs/design/game-modes.md, e.g. robbers): QuickMatch = Free Play of the
+#                  mode, Lobby = the host picks it; summary checks the mode's dice + round grants on every client
+#   --ui           with --game-mode: start it through the menu UI (Free Play mode box / lobby Game mode selector, cfg
+#                  Debug.AutoPlayUi). CATAN_SHOTS=1 + HEADLESS_METHOD=gamescope: screenshots in the run dirs
 # GAME_DIR=<dir> (env) runs a different game copy, e.g. one whose BepInEx/plugins holds a test build of the mod.
 # Needs: Steam running, server up (podman server_nakama_1), tools/build.sh deployed. Never uses the official servers.
 set -uo pipefail
 TOOLS="$(cd "$(dirname "$0")" && pwd)"
 source "$TOOLS/common.sh"
 
-TIMEOUT=1500; MODE=QuickMatch; SCALE=1; RECONNECT=0; KEEP=0; ONLY_SUMMARY=0; SERVER=""; KEY=defaultkey; FIRST=1; CONTAINER=server_nakama_1; PLAYERS=2; EXPANSION=CatanBaseGame
+TIMEOUT=1500; MODE=QuickMatch; SCALE=1; RECONNECT=0; KEEP=0; ONLY_SUMMARY=0; SERVER=""; KEY=defaultkey; FIRST=1; CONTAINER=server_nakama_1; PLAYERS=2; EXPANSION=CatanBaseGame; GAME_MODE=""; UI=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --timeout) TIMEOUT="$2"; shift ;;
@@ -34,6 +38,8 @@ while [[ $# -gt 0 ]]; do
     --container) CONTAINER="$2"; shift ;;
     --players) PLAYERS="$2"; shift ;;
     --expansion) EXPANSION="$2"; shift ;;
+    --game-mode) GAME_MODE="$2"; shift ;;
+    --ui) UI=true ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
   shift
@@ -107,6 +113,27 @@ if any(mixes):
     bad = [u for u in common if len(set.union(*[m[u] for m in mixes])) != 1]
     print(f"[rng] rolls/turn ends seen on every client: {len(common)}, RNG state mismatches: {len(bad)} {sorted(bad, key=int)[:5]}")
     if bad: ok_all = False
+# game modes (mod log, harness only): every applied roll + every round grant; grants must be identical on every client
+grants_by = []
+for rd in runs:
+    blog = open(os.path.join(rd, 'bepinex.log'), errors='replace').read() if os.path.exists(os.path.join(rd, 'bepinex.log')) else ''
+    mode = re.findall(r'GameModes: challenge \S+ plays mode (.+)', blog)
+    rolls = [tuple(map(int, d.split(','))) for d in re.findall(r'Modes: roll turn=-?\d+ dice=\[([\d,]+)\]', blog)]
+    g = {}
+    for turn, txt in re.findall(r'Modes: round grant turn=(-?\d+) next=\d+: (.*)', blog):
+        g.setdefault(int(turn), set()).add(txt.strip())
+    grants_by.append(g)
+    if mode or rolls or g:
+        sums = collections.Counter(a + b for a, b in rolls)
+        per = [len(re.findall(r'p\d+=\[([^\]]*)\]', next(iter(v)))) for v in g.values()]
+        cards = collections.Counter(len(x.split(',')) for v in g.values() for x in re.findall(r'p\d+=\[([^\]]*)\]', next(iter(v))))
+        print(f"[client {os.path.basename(rd).split('-')[-1]}] mode: {mode[-1] if mode else '?'}; rolls applied={len(rolls)} sums={dict(sums)}; "
+              f"round grants={len(g)} (players per grant {sorted(set(per))}, cards per player {dict(cards)}); conflicting grants for one turn={sum(1 for v in g.values() if len(v) > 1)}")
+if any(grants_by):
+    common = set.intersection(*[set(g) for g in grants_by]) if all(grants_by) else set()
+    bad = [t for t in common if len(set.union(*[g[t] for g in grants_by])) != 1]
+    print(f"[modes] round grants seen on every client: {len(common)}, differing between clients: {len(bad)} {sorted(bad)[:5]}")
+    if bad: ok_all = False
 print("RESULT: " + ("PASS (every client got GAME_MULTIPLAYER_RESULT)" if ok_all else "INCOMPLETE (no result on at least one client)"))
 open(os.path.join(state, 'result'), 'w').write('PASS' if ok_all else 'FAIL')
 PY
@@ -163,7 +190,7 @@ date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE/since"
 export CATAN_INVITE_FILE="$STATE/invite-id"; rm -f "$CATAN_INVITE_FILE"
 mode_of() { if [[ $MODE == Lobby ]]; then [[ $1 == $I1 ]] && echo HostLobby || echo JoinLobby; else echo "$MODE"; fi; }
 launch() { "$TOOLS/run-game.sh" --instance "$1" --headless --server "$SERVER_NAME" \
-  --cfg Debug.AutoPlay="$(mode_of "$1")" --cfg Debug.AutoPlayPlayers="$PLAYERS" --cfg Debug.AutoPlayExpansion="$EXPANSION" --cfg Debug.AutoPlayTimeScale="$SCALE" --cfg Debug.TrafficLog=true --cfg Debug.UnityLog=true | head -1; }
+  --cfg Debug.AutoPlay="$(mode_of "$1")" --cfg Debug.AutoPlayPlayers="$PLAYERS" --cfg Debug.AutoPlayExpansion="$EXPANSION" --cfg Debug.AutoPlayMode="$GAME_MODE" --cfg Debug.AutoPlayUi="$UI" --cfg Debug.AutoPlayTimeScale="$SCALE" --cfg Debug.TrafficLog=true --cfg Debug.UnityLog=true | head -1; }
 for i in $INSTS; do launch $i; done
 
 alive() { [[ -f "$CACHE_DIR/run-$1/game.pid" ]] && kill -0 "$(cat "$CACHE_DIR/run-$1/game.pid")" 2>/dev/null; }

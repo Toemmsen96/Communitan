@@ -33,6 +33,8 @@ namespace Communitan
         internal static ConfigEntry<float> autoPlayTimeScale;
         internal static ConfigEntry<int> autoPlayPlayers;
         internal static ConfigEntry<string> autoPlayExpansion;
+        internal static ConfigEntry<string> autoPlayGameMode;
+        internal static ConfigEntry<bool> autoPlayUi;
         internal static ConfigEntry<bool> unityLog;
         internal static ConfigEntry<bool> blockAnalytics;
         internal static ConfigEntry<bool> showServerInfo;
@@ -67,6 +69,8 @@ namespace Communitan
             deviceIdOverride = cfg.Bind("Debug", "DeviceIdOverride", "", "Harness: replaces SystemInfo.deviceUniqueIdentifier (guest login id) so several instances get distinct accounts; env CATAN_DEVICE_ID wins");
             autoPlayPlayers = cfg.Bind("Debug", "AutoPlayPlayers", 0, "Harness: exact player count the bot searches for (0 = the game's default for that mode; base-game quick match = 3)");
             autoPlayExpansion = cfg.Bind("Debug", "AutoPlayExpansion", "CatanBaseGame", "Harness: expansion of the QuickMatch/AutoMatch the bot searches (ExpansionsEnum name, e.g. CatanCitiesAndKnights, CatanSeafarer)");
+            autoPlayGameMode = cfg.Bind("Debug", "AutoPlayMode", "", "Harness: custom server game mode id (server/data/modes) the QuickMatch bot queues for, e.g. robbers; empty = normal Free Play");
+            autoPlayUi = cfg.Bind("Debug", "AutoPlayUi", false, "Harness: with AutoPlayMode, start the mode game through the menu UI (Free Play mode box; HostLobby: the lobby's Game mode selector) instead of setting it directly");
             autoPlayTimeScale = cfg.Bind("Debug", "AutoPlayTimeScale", 1f, "Harness: Time.timeScale while AutoPlay is on (speeds up animations and AI delays)");
             unityLog = cfg.Bind("Debug", "UnityLog", false, "Keep the game's Debug.Log output enabled (production builds switch it off); goes to Player.log");
             Harness.Init();
@@ -91,6 +95,7 @@ namespace Communitan
             harmony.PatchAll(typeof(RegisterFlow));
             harmony.PatchAll(typeof(MailFilter));
             ServerRng.Patch(harmony);
+            GameModes.Patch(harmony);
             harmony.PatchAll(typeof(Entitlements));
             harmony.PatchAll(typeof(GameLogicWait));
             harmony.PatchAll(typeof(ScenarioSync));
@@ -112,6 +117,7 @@ namespace Communitan
             }
             gameObject.AddComponent<MatchmakingStatus>();
             gameObject.AddComponent<ServerInfoOverlay>();
+            gameObject.AddComponent<GameModesUi>();
             gameObject.AddComponent<RejoinCancel>();
             gameObject.AddComponent<KickReasonText>();
             gameObject.AddComponent<Entitlements>();

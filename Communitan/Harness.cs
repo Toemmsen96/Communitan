@@ -152,6 +152,50 @@ namespace Communitan
         internal static bool LoginDone;
         private static string lastWait;
 
+        internal static string MenuWaitPublic() => MenuWait();
+
+        internal static void ShotLater(string name, float seconds)
+        {
+            if (Environment.GetEnvironmentVariable("CATAN_SHOTS") == "1" && Communitan.instanceRef != null)
+            {
+                Communitan.instanceRef.StartCoroutine(ShotAfter(name, seconds));
+            }
+        }
+
+        private static IEnumerator ShotAfter(string name, float seconds)
+        {
+            yield return new WaitForSecondsRealtime(seconds);
+            Shot(name);
+        }
+
+        // Harness screenshot (env CATAN_SHOTS=1, needs a rendering run: HEADLESS_METHOD=gamescope) into the instance run dir.
+        internal static void Shot(string name)
+        {
+            if (Environment.GetEnvironmentVariable("CATAN_SHOTS") != "1")
+            {
+                return;
+            }
+            try
+            {
+                // the server's welcome popup would cover everything
+                UiRework.PopupManager pm = SceneHelper.IsInMainMenu ? UnityEngine.Object.FindObjectOfType<UiRework.PopupManager>() : null;
+                GameObject news = pm != null && pm.scrollableDialogBox != null ? pm.scrollableDialogBox.gameObject : null;
+                if (news != null && news.activeSelf)
+                {
+                    news.SetActive(false);
+                }
+                string dir = Path.GetDirectoryName(Environment.GetEnvironmentVariable("CATAN_LOG") ?? "") ?? "";
+                string path = Path.Combine(dir, $"shot-{DateTime.Now:HHmmss}-{name}.png");
+                Type t = Type.GetType("UnityEngine.ScreenCapture, UnityEngine.ScreenCaptureModule");
+                t?.GetMethod("CaptureScreenshot", new[] { typeof(string) })?.Invoke(null, new object[] { path });
+                Communitan.logger.LogInfo($"Harness: screenshot {path}");
+            }
+            catch (Exception e)
+            {
+                Communitan.logger.LogWarning($"Harness: screenshot failed: {e}");
+            }
+        }
+
         // null = ready; else what we are waiting for.
         private static string MenuWait()
         {
@@ -205,7 +249,11 @@ namespace Communitan
                 if (!hooked)
                 {
                     hooked = true;
-                    net.MatchConnecting.OnGameStarted += _ => log.LogInfo("Milestone: AutoPlay game started");
+                    net.MatchConnecting.OnGameStarted += _ =>
+                    {
+                        log.LogInfo("Milestone: AutoPlay game started");
+                        ShotLater("ingame", 25f);
+                    };
                     net.MatchConnecting.OnError += s => log.LogWarning($"Harness: MatchConnecting error in state {s}");
                 }
                 float scale = Communitan.autoPlayTimeScale.Value;
@@ -282,6 +330,31 @@ namespace Communitan
             if (created != true)
             {
                 yield break;
+            }
+            string mode = Communitan.autoPlayGameMode.Value?.Trim();
+            if (!string.IsNullOrEmpty(mode))
+            {
+                // game mode of the lobby: the host's selector in the scenario settings (GameModesUi), or directly
+                bool? picked = null;
+                if (Communitan.autoPlayUi.Value)
+                {
+                    yield return Communitan.instanceRef.StartCoroutine(GameModesUi.HarnessPickLobbyMode(mode, ok => picked = ok));
+                }
+                else
+                {
+                    GameModes.SetQueued(gi, mode);
+                    lobby.UpdateGameInfo(() => picked = true);
+                    while (picked == null)
+                    {
+                        yield return null;
+                    }
+                }
+                gi = CommonNetworking.Instance.MatchConnecting.GameInfo;
+                log.LogInfo($"Milestone: AutoPlay lobby mode {mode} picked={picked} ({(Communitan.autoPlayUi.Value ? "selector" : "direct")}), game info mode={GameModes.QueuedMode(gi) ?? "-"}");
+                if (picked != true)
+                {
+                    yield break;
+                }
             }
             string inviteId = Environment.GetEnvironmentVariable("CATAN_INVITE_ID");
             while (string.IsNullOrEmpty(inviteId))
@@ -411,6 +484,22 @@ namespace Communitan
             // real scenario next to a player with "" leaves nothing in common, the client throws, re-queues and gets kicked later.
             string scenario = ScenarioSetupCollection.Instance.GetScenarioIdForFreematch(exp);
             gi.SetFreeMatch(exp, scenario);
+            string mode = Communitan.autoPlayGameMode.Value?.Trim();
+            if (!string.IsNullOrEmpty(mode))
+            {
+                if (!GameModes.ValidId(mode) || !GameModes.PatchesOk)
+                {
+                    Communitan.logger.LogError($"Harness: game mode '{mode}' not usable (id or patches)");
+                    return true; // don't queue a normal game instead
+                }
+                if (Communitan.autoPlayUi.Value)
+                {
+                    // the menu path: the mode's Free Play box (GameModesUi), players = the mode's (clamped) count
+                    Communitan.instanceRef.StartCoroutine(GameModesUi.HarnessFreePlayBox(mode, ok => Communitan.logger.LogInfo($"Milestone: AutoPlay quick match requested via the mode box (mode={mode}, ok={ok})")));
+                    return true;
+                }
+                GameModes.SetQueued(gi, mode); // matchmaker property + query term, gameInfo.ccsMode (GameModes.cs)
+            }
             // Base-game quick match defaults to 3 players; Debug.AutoPlayPlayers=2 lets two harness clients meet (FREEMATCH_2P).
             int players = Communitan.autoPlayPlayers.Value;
             if (players > 0)
@@ -419,7 +508,7 @@ namespace Communitan
                 gi.MaxPlayers = players;
             }
             bool ok = MonoBehaviourSingleton<WaitForMultiplayerGameController>.Instance.StartMatchmaking();
-            Communitan.logger.LogInfo($"Milestone: AutoPlay quick match requested (scenario={scenario}, players={gi.MinPlayers}-{gi.MaxPlayers}, ok={ok})");
+            Communitan.logger.LogInfo($"Milestone: AutoPlay quick match requested (scenario={scenario}, players={gi.MinPlayers}-{gi.MaxPlayers}, mode={(string.IsNullOrEmpty(mode) ? "-" : mode)}, ok={ok})");
             return ok;
         }
 

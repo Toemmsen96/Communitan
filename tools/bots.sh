@@ -3,18 +3,20 @@
 # play their seat (harness Debug.AutoPlay). See tools/README.md "Bots".
 #
 #   tools/bots.sh start [--mode free|auto] [--players N] [--count N] [--server URL] [--key KEY] [--timeout SEC] [--first N] [--no-wait]
+#                       [--game-mode ID]
 #   tools/bots.sh stop
 #   tools/bots.sh status
 #
 # Defaults: --mode free (Free Play: works for free-tier accounts), --players 3, --count players-1,
 # --server http://127.0.0.1:7350, --key defaultkey, --timeout 2400, instances from --first 2.
+# --game-mode ID: Free Play of a custom game mode of that server (status gameModes, docs/design/game-modes.md), e.g. robbers.
 # Start your own game from Steam FIRST: while bots run, Steam shows the game as running and may refuse to launch it.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 source tools/common.sh
 
 CMD="${1:-}"; shift || true
-MODE=free; PLAYERS=3; COUNT=""; SERVER="http://127.0.0.1:7350"; KEY=defaultkey; TIMEOUT=2400; FIRST=2; WAIT=1
+MODE=free; PLAYERS=3; COUNT=""; SERVER="http://127.0.0.1:7350"; KEY=defaultkey; TIMEOUT=2400; FIRST=2; WAIT=1; GAME_MODE=""
 STATUS_KEY="${NAKAMA_HTTP_KEY:-catan-public-status}"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -26,7 +28,8 @@ while [[ $# -gt 0 ]]; do
     --timeout) TIMEOUT="$2"; shift ;;
     --first) FIRST="$2"; shift ;;
     --no-wait) WAIT=0 ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    --game-mode) GAME_MODE="$2"; shift ;;
+    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
     *) echo "unknown option $1" >&2; exit 2 ;;
   esac
   shift
@@ -53,6 +56,7 @@ case "$CMD" in
       free) AUTOPLAY=QuickMatch ;;
       *) echo "--mode must be free or auto" >&2; exit 2 ;;
     esac
+    [[ -z "$GAME_MODE" || "$MODE" == free ]] || { echo "--game-mode needs --mode free" >&2; exit 2; }
     [[ -n "$COUNT" ]] || COUNT=$((PLAYERS - 1))
     HOST="${SERVER#*://}"; SCHEME="${SERVER%%://*}"
     for ((i = 0; i < COUNT; i++)); do
@@ -74,8 +78,8 @@ d["selected"] = "Bots"
 json.dump(d, open(path, "w"), indent=2)
 PY
       tools/run-game.sh --instance "$n" --headless --server Bots --timeout "$TIMEOUT" \
-        --cfg Debug.AutoPlay="$AUTOPLAY" --cfg Debug.AutoPlayPlayers="$PLAYERS" > "$RUN_DIR/bots.out" 2>&1 &
-      echo "started bot instance $n ($MODE match, $PLAYERS players, $SERVER, stops after ${TIMEOUT}s)"
+        --cfg Debug.AutoPlay="$AUTOPLAY" --cfg Debug.AutoPlayPlayers="$PLAYERS" --cfg Debug.AutoPlayMode="$GAME_MODE" > "$RUN_DIR/bots.out" 2>&1 &
+      echo "started bot instance $n ($MODE match${GAME_MODE:+, game mode $GAME_MODE}, $PLAYERS players, $SERVER, stops after ${TIMEOUT}s)"
     done
     if [[ "$WAIT" == 1 ]]; then
       echo "waiting until the bots are searching (up to 3 min; Ctrl+C is fine, they keep starting)..."
@@ -102,5 +106,5 @@ PY
     done
     echo "server: $(server_status)"
     ;;
-  *) sed -n '2,12p' "$0"; exit 2 ;;
+  *) sed -n '2,14p' "$0"; exit 2 ;;
 esac

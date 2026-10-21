@@ -25,11 +25,12 @@ namespace Communitan
         private GUIStyle fallbackStyle;
         private bool showFallback;
 
-        // Same key the server builds from the matchmaker add: matchType|expansions sorted (ordinal), comma-joined|min-max.
+        // Same key the server builds from the matchmaker add: matchType|expansions sorted (ordinal), comma-joined|min-max[|game mode].
         internal static string ModeKey(MultiplayerGameInformation gi)
         {
             string expansions = string.Join(",", gi.SelectedExpansions.Select(e => e.ToString()).OrderBy(e => e, StringComparer.Ordinal));
-            return $"{gi.Match}|{expansions}|{gi.MinPlayers}-{gi.MaxPlayers}";
+            string mode = GameModes.QueuedMode(gi);
+            return $"{gi.Match}|{expansions}|{gi.MinPlayers}-{gi.MaxPlayers}" + (mode != null ? "|" + mode : "");
         }
 
         private static bool Searching(out MultiplayerGameInformation gi)
