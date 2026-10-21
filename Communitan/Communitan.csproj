@@ -41,6 +41,7 @@
     <Reference Include="UnityEngine.UnityAnalyticsModule" HintPath="$(ManagedDir)/UnityEngine.UnityAnalyticsModule.dll" Private="false" />
     <Reference Include="UnityEngine.PerformanceReportingModule" HintPath="$(ManagedDir)/UnityEngine.PerformanceReportingModule.dll" Private="false" />
     <Reference Include="UnityEngine.UI" HintPath="$(ManagedDir)/UnityEngine.UI.dll" Private="false" />
+    <Reference Include="UnityEngine.UIModule" HintPath="$(ManagedDir)/UnityEngine.UIModule.dll" Private="false" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>

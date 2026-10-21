@@ -2,11 +2,11 @@
 # AI opponents for testing: headless game instances that log in as guests, search a match and let the game's AI
 # play their seat (harness Debug.AutoPlay). See tools/README.md "Bots".
 #
-#   tools/bots.sh start [--mode auto|free] [--players N] [--count N] [--server URL] [--key KEY] [--timeout SEC] [--first N] [--no-wait]
+#   tools/bots.sh start [--mode free|auto] [--players N] [--count N] [--server URL] [--key KEY] [--timeout SEC] [--first N] [--no-wait]
 #   tools/bots.sh stop
 #   tools/bots.sh status
 #
-# Defaults: --mode auto (the menu's base-game quickplay = auto match), --players 3, --count players-1,
+# Defaults: --mode free (Free Play: works for free-tier accounts), --players 3, --count players-1,
 # --server http://127.0.0.1:7350, --key defaultkey, --timeout 2400, instances from --first 2.
 # Start your own game from Steam FIRST: while bots run, Steam shows the game as running and may refuse to launch it.
 set -uo pipefail
@@ -14,7 +14,7 @@ cd "$(dirname "$0")/.."
 source tools/common.sh
 
 CMD="${1:-}"; shift || true
-MODE=auto; PLAYERS=3; COUNT=""; SERVER="http://127.0.0.1:7350"; KEY=defaultkey; TIMEOUT=2400; FIRST=2; WAIT=1
+MODE=free; PLAYERS=3; COUNT=""; SERVER="http://127.0.0.1:7350"; KEY=defaultkey; TIMEOUT=2400; FIRST=2; WAIT=1
 STATUS_KEY="${NAKAMA_HTTP_KEY:-catan-public-status}"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -51,7 +51,7 @@ case "$CMD" in
     case "$MODE" in
       auto) AUTOPLAY=AutoMatch ;;
       free) AUTOPLAY=QuickMatch ;;
-      *) echo "--mode must be auto or free" >&2; exit 2 ;;
+      *) echo "--mode must be free or auto" >&2; exit 2 ;;
     esac
     [[ -n "$COUNT" ]] || COUNT=$((PLAYERS - 1))
     HOST="${SERVER#*://}"; SCHEME="${SERVER%%://*}"

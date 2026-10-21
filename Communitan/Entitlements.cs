@@ -30,7 +30,10 @@ namespace Communitan
         private const string FileName = "Communitan.entitlements.json";
         private static readonly object gate = new object();
         private static volatile string pendingLogin; // "<endpoint>|<userId>" set off the main thread, handled in Update
-        private static readonly HashSet<string> claimed = new HashSet<string>(); // per endpoint|userId, this game session
+        // per endpoint|userId, this game session: claimed = the server took (or definitively refused) the record; claiming = in
+        // flight. A login whose claim sent nothing (no official record yet, status unknown, error) is tried again at the next login.
+        private static readonly HashSet<string> claimed = new HashSet<string>();
+        private static readonly HashSet<string> claiming = new HashSet<string>();
 
         internal static string FilePath => Path.Combine(Path.GetDirectoryName(ServerList.FilePath), FileName);
 
@@ -153,15 +156,12 @@ namespace Communitan
                 return;
             }
             pendingLogin = null;
-            if (!claimed.Add(login))
+            ServerEntry entry = ServerList.CurrentEntry;
+            if (entry == null || claimed.Contains(login) || !claiming.Add(login))
             {
                 return;
             }
-            ServerEntry entry = ServerList.CurrentEntry;
-            if (entry != null)
-            {
-                StartCoroutine(Claim(entry, login));
-            }
+            StartCoroutine(Claim(entry, login));
         }
 
         private IEnumerator Claim(ServerEntry entry, string login)
@@ -175,6 +175,11 @@ namespace Communitan
             if (status?.Entitlements != "owned")
             {
                 Communitan.logger.LogInfo($"Entitlements: {entry.Name} is in mode '{status?.Entitlements ?? "unknown"}', nothing sent");
+                if (status != null)
+                {
+                    claimed.Add(login); // definitive for this session: the server doesn't mirror purchases
+                }
+                claiming.Remove(login);
                 yield break;
             }
             JObject rec = Load();
@@ -191,10 +196,12 @@ namespace Communitan
                     }
                 }
                 Communitan.logger.LogInfo("Entitlements: no official record yet, nothing sent");
+                claiming.Remove(login);
                 yield break;
             }
             if (!ServerList.IsCustomSelected || ServerList.Endpoint(ServerList.Current) != login.Substring(0, login.LastIndexOf('|')))
             {
+                claiming.Remove(login);
                 yield break; // server switched meanwhile
             }
             List<string> items = (rec["items"] as JArray)?.Select(t => (string)t).Where(s => !string.IsNullOrEmpty(s)).ToList() ?? new List<string>();
@@ -206,16 +213,19 @@ namespace Communitan
                 .SetEventAttribute("capturedAt", (string)rec["capturedAt"] ?? "")
                 .Send(response =>
                 {
+                    claiming.Remove(login);
                     if (response.HasErrors)
                     {
                         string code = response.Errors?.GetString("code");
                         Communitan.logger.LogWarning($"Entitlements: claim refused by {entry.Name}: {code ?? response.JSONString}");
                         if (code == "ENTITLEMENTS_ALREADY_CLAIMED")
                         {
+                            claimed.Add(login);
                             ShowDialog("Purchases already linked", "Your official purchases are already linked to another account on this server. Each official account can unlock one account per server; ask the server operator if this is wrong.");
                         }
                         return;
                     }
+                    claimed.Add(login);
                     Communitan.logger.LogInfo($"Entitlements: mirrored to {entry.Name}: expansions={response.ScriptData?.GetLong("expansions")}, items={response.ScriptData?.GetInt("items")}, rejected={response.ScriptData?.GetInt("rejected")}");
                     Refresh();
                 });

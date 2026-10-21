@@ -406,13 +406,10 @@ namespace Communitan
             var all = (System.Collections.Generic.List<ScenarioSetup>)AccessTools.Field(typeof(ScenarioSetupCollection), "scenarios").GetValue(ScenarioSetupCollection.Instance);
             Communitan.logger.LogInfo("Harness: scenarios " + string.Join(" ", all.ConvertAll(x => $"{x.ScenarioId}/{x.MainExpansion}{(x.IsFreeMatch ? "/free" : "")}{(x.IsTestSetup ? "/test" : "")}").ToArray()));
             ExpansionsEnum exp = AutoPlayExpansion;
+            // Exactly what the menu sends (UiRework.ModeSelection/PlayGame.PlayFreeMatch): "" for the base game, which has no
+            // free-match scenario. Matched players' scenarios are intersected (NakamaInstance.FinalizeMatchmaking); a bot with a
+            // real scenario next to a player with "" leaves nothing in common, the client throws, re-queues and gets kicked later.
             string scenario = ScenarioSetupCollection.Instance.GetScenarioIdForFreematch(exp);
-            if (string.IsNullOrEmpty(scenario))
-            {
-                // No scenario flagged as free match for the expansion: its first regular scenario.
-                ScenarioSetup first = ScenarioSetupCollection.Instance.GetScenarios(exp).Find(x => !x.IsFreeMatch);
-                scenario = first?.ScenarioId ?? "";
-            }
             gi.SetFreeMatch(exp, scenario);
             // Base-game quick match defaults to 3 players; Debug.AutoPlayPlayers=2 lets two harness clients meet (FREEMATCH_2P).
             int players = Communitan.autoPlayPlayers.Value;

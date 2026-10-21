@@ -25,15 +25,15 @@ then `tail -f "$GAME/BepInEx/LogOutput.log"` / `jq -c '[.dir,.id]' "$GAME/BepInE
 Headless game instances that log in as guests (`Bot<id>`), search a match like a player would, and let the game's own AI play their seat. Useful for testing online play alone.
 
 1. **Start your own game from Steam first.** While bots run, Steam shows Catan Universe as running and may refuse to launch it.
-2. `tools/bots.sh start` — 2 bots for the menu's base-game **quickplay** (auto match, 3 players). Waits until they're searching.
-3. In the game, search the **same mode and player count** (base game, 3 players).
+2. `tools/bots.sh start` — 2 bots for base-game **Free Play** (free match, 3 players). Waits until they're searching.
+3. In the game, search the **same mode and player count** (Free Play, base game, 3 players).
 4. `tools/bots.sh status` — running bots, their last milestone, and the server's online/playing/searching counts.
 5. `tools/bots.sh stop` — stop all bots (Steam's Stop button can't, Steam didn't launch them).
 
 Options for `start`:
 | Option | Default | Meaning |
 |---|---|---|
-| `--mode auto\|free` | `auto` | `auto` = auto match (the menu's normal online/quickplay button); `free` = free match (`PlayFreeMatch`). The two never pair with each other. |
+| `--mode free\|auto` | `free` | `free` = free match (Free Play, `PlayFreeMatch`; works for free-tier accounts); `auto` = auto match (the menu's quickplay button, needs the base game). The two never pair with each other. |
 | `--players N` | `3` | Exact player count the bots search (must equal yours; base-game quickplay is 3). |
 | `--count N` | players − 1 | Number of bots. |
 | `--server URL` | `http://127.0.0.1:7350` | Any custom server (`host`, `host:port` or `http(s)://host:port`). Bots create guest accounts there. |
@@ -42,7 +42,7 @@ Options for `start`:
 | `--first N` | `2` | First harness instance number (instances use `~/.cache/communitan/run-N/`). |
 | `--no-wait` | | Don't wait for the bots to start searching. |
 
-Free tier: on a server with `CATAN_ENTITLEMENTS=free` (the default) your own account owns no expansion, like a free official account, so the menu's base-game quickplay (auto match) shows the shop instead of "find game". Search **Free Play** and start the bots with `--mode free`, or use a server in `owned` mode after logging in to the official servers once (mirrors your purchases), or the dev unlock below. The bots start their match directly and play in every mode (checked: 2 free-tier bots, auto match).
+Free tier: on a server with `CATAN_ENTITLEMENTS=free` (the default) your own account owns no expansion, like a free official account, so the menu's base-game quickplay (auto match) shows the shop instead of "find game". Search **Free Play** (the bots' default), or for quickplay use `--mode auto` with a server in `owned` mode after logging in to the official servers once (mirrors your purchases), or the dev unlock below. The bots start their match directly and play in every mode (checked: 2 free-tier bots, auto match).
 
 Notes: a bot only searches once; after a match ends, run `stop` + `start` again. Bots never accept trades they don't like (the game's AI decides) and don't accept lobby invites or friend requests. Logs: `run-N/bepinex.log`, `run-N/traffic.jsonl`.
 

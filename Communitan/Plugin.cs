@@ -17,6 +17,7 @@ namespace Communitan
         private const string modGUID = "Toemmsen96.Communitan";
         private const string modName = "Communitan";
         private const string modVersion = "0.1.0";
+        internal static string Version => modVersion;
         private readonly Harmony harmony = new Harmony(modGUID);
         private static Communitan instance;
         internal static MonoBehaviour instanceRef => instance;
@@ -34,6 +35,7 @@ namespace Communitan
         internal static ConfigEntry<string> autoPlayExpansion;
         internal static ConfigEntry<bool> unityLog;
         internal static ConfigEntry<bool> blockAnalytics;
+        internal static ConfigEntry<bool> showServerInfo;
 
         private void Awake()
         {
@@ -58,6 +60,7 @@ namespace Communitan
             showPicker = cfg.Bind("Startup", "ShowPicker", true, "Show the server picker at startup (skipped when Startup.AutoSelect is set)");
             autoSelect = cfg.Bind("Startup", "AutoSelect", "", "Server name (or 'Official') to use this session without asking; empty = saved selection from Communitan.servers.json");
             trafficLog = cfg.Bind("Debug", "TrafficLog", false, "Append Nakama traffic (your ids, messages; passwords masked) as JSON lines to BepInEx/traffic.jsonl. env CATAN_TRAFFIC_LOG=1 forces it on (tools/run-game.sh)");
+            showServerInfo = cfg.Bind("UI", "ShowServerInfo", true, "Show the Communitan version and the current server at the top of the screen");
             blockAnalytics = cfg.Bind("Privacy", "BlockAnalytics", true, "While a custom server is selected: drop GameAnalytics events (gameanalytics.com), switch off Unity Analytics / performance reporting and skip Unity Gaming Services init. Never affects the official servers");
             autoConnect = cfg.Bind("Debug", "AutoConnect", AutoConnectMode.Off, "Harness: once the main menu is up, Connect = start Nakama without login; DeviceLogin = also log in as device/guest (creates an account on the selected server!)");
             autoPlay = cfg.Bind("Debug", "AutoPlay", AutoPlayMode.Off, "Harness: QuickMatch = 2-player base-game free match, AutoMatch = 2-player base-game auto (ranked) match, from the main menu; the game's AI plays the local seat (implies AutoConnect=DeviceLogin). HostLobby/JoinLobby: not implemented yet");
@@ -89,6 +92,9 @@ namespace Communitan
             harmony.PatchAll(typeof(MailFilter));
             ServerRng.Patch(harmony);
             harmony.PatchAll(typeof(Entitlements));
+            harmony.PatchAll(typeof(GameLogicWait));
+            harmony.PatchAll(typeof(ScenarioSync));
+            harmony.PatchAll(typeof(KickReasonText));
             // Startup picker: holds back the game's login until a server is chosen. Never in -batchmode (headless harness).
             bool pickAtStartup = ServerList.PickerRequired && !Application.isBatchMode;
             ServerSwitch.StartupPending = pickAtStartup;
@@ -105,6 +111,9 @@ namespace Communitan
                 ServerPicker.Create(gameObject, pickAtStartup);
             }
             gameObject.AddComponent<MatchmakingStatus>();
+            gameObject.AddComponent<ServerInfoOverlay>();
+            gameObject.AddComponent<RejoinCancel>();
+            gameObject.AddComponent<KickReasonText>();
             gameObject.AddComponent<Entitlements>();
             bool trafficOn = trafficLog.Value || System.Environment.GetEnvironmentVariable("CATAN_TRAFFIC_LOG") == "1";
             if (trafficOn)

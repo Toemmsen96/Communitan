@@ -48,6 +48,17 @@ namespace Communitan
             try
             {
                 harmony.PatchAll(typeof(ServerRng));
+                // PatchAll(Type) only processes that type's own methods: the draw re-picks (DevCardDraw, ...) are nested classes.
+                List<string> draws = new List<string>();
+                foreach (Type t in typeof(ServerRng).GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
+                {
+                    if (t.IsDefined(typeof(HarmonyPatch), false))
+                    {
+                        harmony.PatchAll(t);
+                        draws.Add(t.Name);
+                    }
+                }
+                Communitan.logger.LogInfo($"ServerRng: draw re-picks patched: {string.Join(", ", draws.ToArray())}");
                 PatchesOk = true;
             }
             catch (Exception e)
