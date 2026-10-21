@@ -40,7 +40,10 @@ static class Checks
         ["Base_BuildCity|" + C + "AsCandidates.PrevType"] = (r, a, g, rv, gv) => Equals(rv, gv) || Equals(rv, GamePieceType.Settlement) ? null : $"previous piece {rv}",
         [C + "AsCandidates.SelectedType"] = (r, a, g, rv, gv) => Equals(rv, gv) || PieceFor(a) is GamePieceType t && Equals(rv, t) ? null : $"piece {rv}",
         // dice: fixed in off/seeds (generated at context entry from the dice RNG); "full": the server's dice (mp_rng.ts) are in the blob
-        [C + "AsBaseRollDice.DiceValues"] = (r, a, g, rv, gv) => r.FullRng ? (((List<int>)rv)?.All(d => d >= 1 && d <= 6) == true ? null : "dice") : Same(rv, gv) ? null : "forged dice " + string.Join(",", (List<int>)rv),
+        // game mode dice.fixedSum (rules/ModeRules.cs): every roll must have that sum, also in "full" (server dice honour it)
+        [C + "AsBaseRollDice.DiceValues"] = (r, a, g, rv, gv) =>
+            Communitan.Rules.ModeRules.Current?.DiceFixedSum is int fs && ((List<int>)rv)?.Take(2).Sum() != fs ? $"dice sum {((List<int>)rv)?.Take(2).Sum()} in a mode with fixed sum {fs}" :
+            r.FullRng ? (((List<int>)rv)?.All(d => d >= 1 && d <= 6) == true ? null : "dice") : Same(rv, gv) ? null : "forged dice " + string.Join(",", (List<int>)rv),
         // dev card: the top of the stack at generation (fixed; card ids are per-process counters). Also in "full": the card is
         // re-drawn at Apply (Shims.DevCardDraw), but an honest client still embeds the pre-redraw top, which the referee
         // generates identically; a different card = a modified client (e.g. a forced card type).

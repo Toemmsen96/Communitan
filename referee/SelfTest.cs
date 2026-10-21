@@ -97,6 +97,22 @@ static class SelfTest
                 Ok(inv != null && (int)inv["uid"] == acts[k].UniqueId && (int)inv["seat"] == seat && (string)inv["senderId"] == "user-" + seat,
                     $"{name}: tamper {t.name} uid={acts[k].UniqueId} seat={seat} -> {(inv ?? tv["desync"])?.ToJsonString()}");
             }
+            // game mode (docs/design/game-modes.md): every roll of the recording has the fixed sum; a roll with another sum
+            // (dice still 1..6, so "full" mode's range check alone would pass it) is invalid in every RNG mode
+            if (fx["session"]["gameInfo"]?["ccsModeDef"]?["rules"]?["dice"]?["fixedSum"] is JsonNode fsn)
+            {
+                int fs = (int)fsn;
+                Serializer.CurrentFormat = Serializer.Format.binary;
+                var acts = fx["actions"].AsArray().Select(a => Serializer.LoadAsText<CommonGameActionState>((string)a["a"])).ToList();
+                var rolls = acts.Where(a => Id(a) == "Base_RollDice").ToList();
+                Ok(rolls.Count > 0 && rolls.All(a => a.CatanGameActionState.AsBaseRollDice.DiceValues.Take(2).Sum() == fs), $"{name}: mode: all {rolls.Count} recorded rolls sum {fs} (stats {v["stats"]?["modeRolls"]} generated, {v["stats"]?["modeGrants"]} round grants)");
+                int k = Forge(acts, "Base_RollDice", a => { var d = a.CatanGameActionState.AsBaseRollDice.DiceValues; d[0] = 6; d[1] = fs == 12 ? 5 : 6; });
+                var arr = fx["actions"].DeepClone().AsArray();
+                arr[k]["a"] = Serializer.SaveAsText(acts[k]);
+                var tv = Server.Handle(new JsonObject { ["session"] = fx["session"].DeepClone(), ["actions"] = arr }.ToJsonString());
+                Ok(tv["invalid"] != null && (int)tv["invalid"]["uid"] == acts[k].UniqueId && ((string)tv["invalid"]["reason"]).Contains("fixed sum"),
+                    $"{name}: tamper mode: roll with another sum uid={acts[k].UniqueId} -> {(tv["invalid"] ?? tv["desync"])?.ToJsonString()}");
+            }
         }
         if (Checks.Calibrate)
         {

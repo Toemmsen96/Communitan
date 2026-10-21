@@ -4,6 +4,7 @@
 //      offline (referee/stubber), hits are counted.
 //  (2) Communitan L2 "full" server RNG (port of Communitan/ServerRng.cs, docs/design/server-rng.md): per-action word
 //      XOR-mixed into both RNG states before Apply, dev card re-drawn at Apply. Base game: no other draw re-picks apply.
+//  (3) game modes: rules/ModeRules.cs (same source as the mod), Replay sets ModeRules.Current per replay.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ static class Shims
         Patch(h, typeof(BaseCheckLongestRoadRule), "GenerateAllPlayerLongestRoad", nameof(AllLongestRoads));
         Patch(h, typeof(BaseCheckLongestRoadRule), nameof(BaseCheckLongestRoadRule.CalculateRoadLengthOfPlayer), nameof(RoadLength));
         Patch(h, typeof(BaseShuffleMapRule), "CreateRandomNumberGenerator", nameof(ShuffleRng));
+        Communitan.Rules.ModeRules.Patch(h); // game-mode rule switches (rules/, shared with the mod), active per replay
         var hook = Type.GetType("UnityEngine.L3Stub, UnityEngine.CoreModule")?.GetField("OnHit");
         if (hook == null) throw new Exception("UnityEngine.CoreModule is not the stubbed copy (run tools/referee-setup.sh)");
         hook.SetValue(null, (Action<string>)(n => Hit("icall " + n)));

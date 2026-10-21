@@ -21,6 +21,8 @@
     <Reference Include="UnityEngine.CoreModule" HintPath="$(RefereeGame)/Managed/UnityEngine.CoreModule.dll" Private="false" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Game-mode rule switches, shared with the mod (docs/design/game-modes.md) -->
+    <Compile Include="../rules/*.cs" Link="rules/%(Filename)%(Extension)" />
     <Compile Remove="stubber/**;setup/**;test/**;game/**;bin/**;obj/**" />
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@ using Catan.GameLogic.Utilities;
 using Common.GameLogic;
 using Common.GameLogic.Actions;
 using Common.GameLogic.Model;
+using Communitan.Rules;
 using Thrift.Utilities;
 
 class Replay
@@ -59,6 +60,13 @@ class Replay
         if (rng != "off" && rng != "seeds" && rng != "full") return Unsupported("rng " + rng);
         FullRng = rng == "full";
         Seed = (int)session["seed"];
+        // game mode (docs/design/game-modes.md): the server's resolved definition travels in gameInfo.ccsModeDef
+        ModeDef mode = null;
+        if (gi["ccsMode"] != null || gi["ccsModeDef"] != null)
+        {
+            mode = ParseMode(gi["ccsModeDef"] as JsonObject);
+            if (mode == null) return Unsupported("game mode " + gi["ccsMode"] + " without a definition");
+        }
 
         // ---- decode (server stores the blobs exactly as relayed: base64 Thrift CommonGameActionState) ----
         Serializer.CurrentFormat = Serializer.Format.binary;
@@ -80,6 +88,9 @@ class Replay
         acts = acts.OrderBy(x => x.A.UniqueId).ThenBy(x => x.Idx).ToList();
 
         Current = this;
+        ModeRules.Current = mode;
+        ModeRules.Gate = null;
+        ModeRules.Rolls = ModeRules.Grants = 0;
         try
         {
             Shims.ResetStatics();
@@ -156,7 +167,20 @@ class Replay
         finally
         {
             Current = null;
+            ModeRules.Current = null;
         }
+    }
+
+    // ccsModeDef = server/data/modes/<id>.json as resolved by the server (rules.dice.fixedSum, rules.roundGrant.count)
+    static ModeDef ParseMode(JsonObject o)
+    {
+        if (o == null) return null;
+        var d = new ModeDef { Id = (string)o["id"] ?? "", Name = (string)o["name"] ?? "" };
+        var rules = o["rules"] as JsonObject;
+        if (rules?["dice"]?["fixedSum"] is JsonValue sum && sum.TryGetValue(out int fs)) d.DiceFixedSum = fs;
+        if (rules?["roundGrant"]?["count"] is JsonValue cnt && cnt.TryGetValue(out int c)) d.RoundGrant = c;
+        d.Normalize();
+        return d;
     }
 
     JsonObject Invalid(int uid, int seat, string by, string actionId, string reason)
@@ -201,6 +225,12 @@ class Replay
         if (invalid != null) v["invalid"] = invalid;
         if (desync != null) v["desync"] = desync;
         v["stats"] = new JsonObject { ["actions"] = input.Count, ["applied"] = applied, ["dups"] = dups, ["obsolete"] = obsolete, ["checked"] = Checks.Count, ["mixes"] = Mixes, ["draws"] = Draws, ["ms"] = sw.ElapsedMilliseconds };
+        if (ModeRules.Current != null)
+        {
+            v["mode"] = ModeRules.Current.Id;
+            v["stats"]["modeRolls"] = ModeRules.Rolls;
+            v["stats"]["modeGrants"] = ModeRules.Grants;
+        }
         Checks.Count = 0;
         return v;
     }
