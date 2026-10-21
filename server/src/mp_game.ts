@@ -220,6 +220,7 @@ function mpEloRows(c: GsContext, s: MpSession, fx: MpFx): any[] {
             st.xp = (st.xp || 0) + xp;
             st.played = (st.played || 0) + 1;
             if (rank[id] === 1) st.won = (st.won || 0) + 1;
+            rankingCountGame(st, exp, r.MAP || (s.gameInfo.scenarios || [])[0], rank[id] === 1, false); // profile statistics (ranking.ts)
             fx.after.push(mpObj(MP_STATS, "main", st, undefined, id));
         }
         rows.push({ playerId: id, rank: rank[id] || 0, xpEarned: xp, eloBefore: human ? before[id] : 1000, increaseElo: inc, placementMatchesPlayed: placed, karma: 5 });
@@ -229,7 +230,11 @@ function mpEloRows(c: GsContext, s: MpSession, fx: MpFx): any[] {
 
 function mpWon(c: GsContext): any {
     const r = c.req;
-    if (r.SINGLEPLAYER == 1 || !r.CHALLENGE_ID) return {};
+    if (r.SINGLEPLAYER == 1) {
+        rankingRecordSolo(c); // profile statistics only (ranking.ts)
+        return {};
+    }
+    if (!r.CHALLENGE_ID) return {};
     mpMutate<MpSession>(c.nk, MP_SESSIONS, r.CHALLENGE_ID, (s, fx) => {
         if (!s || s.state === "COMPLETED") return null; // idempotent (durable retries, several senders)
         const now = Date.now();

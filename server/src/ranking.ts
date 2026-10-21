@@ -4,7 +4,8 @@
 // Nakama leaderboards are derived copies written by rankingRecordResult: score = elo*1000 (int), games in record metadata.
 // Client-facing ELO values = elo*1e6 (Elo.ELO_LEADERBOARD_FACTOR). Leaderboards are created in InitModule (main.ts); season ones lazily.
 
-const RK_BRACKETS = [1, 5, 15, 35, 60];
+const RK_BRACKETS = [1, 5, 25, 45, 85]; // PROD LEADERBOARD_GET_BRACKETS (capture 2026-10-21)
+const RK_PLACEMENT = 5;      // ranked games before the client shows an ELO bracket (EloEntry.cs:73)
 const RK_SCORE = 1000;       // leaderboard score = elo * RK_SCORE
 const RK_CLIENT = 1000;      // score * RK_CLIENT = elo * 1e6
 const RK_LB_PLAYER = "PLAYER_ELO_RANKING.EXPANSION.";
@@ -102,6 +103,9 @@ function rkRow(r: nkruntime.LeaderboardRecord, rank?: number): any {
     return d;
 }
 
+// Own-entry placeholder for players without a record (see LeaderboardsEntriesRequest): no userId = "not me" branch.
+const RK_UNRANKED = { userId: "", userName: "", rank: 0, ELO: 0, INCREASE: 0, COUNT: 0, score: 0, gamesPlayed: 0, HASFINISHED: false };
+
 function rkTotal(nk: nkruntime.Nakama, id: string): number {
     return nk.leaderboardRecordsList(id, undefined, 1).rankCount || 0;
 }
@@ -122,24 +126,34 @@ function rkPage(nk: nkruntime.Nakama, id: string, offset: number, count: number)
     return { records: l.records || [], total: l.rankCount || 0 };
 }
 
-// Records of me + accepted friends, ranked among them.
+// Records of me + accepted friends + guild members ("OnlyFriendsAndGuildMembers"), with their GLOBAL ranks: the client
+// computes bracket icons from rank and the response's entryCount (LeaderboardScreen.cs:82), so callers send rkTotal.
 function rkFriendRows(c: GsContext, id: string): any[] {
-    const owners = [c.userId].concat(socIds(socFriends(c, c.userId)[0])).slice(0, 100);
-    const recs = (c.nk.leaderboardRecordsList(id, owners, 1).ownerRecords || []).slice();
-    recs.sort((a, b) => b.score - a.score || b.subscore - a.subscore);
-    return recs.map((r, i) => rkRow(r, i + 1));
+    const owners = [c.userId].concat(socIds(socFriends(c, c.userId)[0]));
+    const g = socMyGuild(c.nk, c.userId);
+    if (g) for (const m of socGuildMembers(c.nk, g.group.id)) if (m.state <= 2) owners.push(m.uid);
+    const uniq = owners.filter((u, i) => owners.indexOf(u) === i).slice(0, 100);
+    const recs = (c.nk.leaderboardRecordsList(id, uniq, 1).ownerRecords || []).slice();
+    recs.sort((a, b) => a.rank - b.rank);
+    return recs.map((r) => rkRow(r));
 }
 
-function rkFindIds(nk: nkruntime.Nakama, name: string, exclude?: string): string[] {
-    const q = String(name || "").trim().replace(/[\\%_]/g, "\\$&");
+// Best-ranked players on board `id` whose name starts with `name` (case-insensitive), or an exact user id
+// (ProfileStatisticsScreen.cs:129 passes playerDetails.Id as PLAYERNAME). Ranked in SQL so the top players aren't cut off.
+function rkFindIds(nk: nkruntime.Nakama, id: string, name: string, limit: number): string[] {
+    const raw = String(name || "").trim();
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw)) return [raw.toLowerCase()];
+    const q = raw.replace(/[\\%_]/g, "\\$&");
     if (!q) return [];
-    const rows = nk.sqlQuery("SELECT value->>'userId' AS uid FROM storage WHERE collection = 'names' AND value->>'name' ILIKE $1 ORDER BY length(value->>'name') LIMIT 20", [q + "%"]);
-    return rows.map((r: any) => r.uid).filter((u: string) => u && u !== exclude);
+    const rows = nk.sqlQuery(
+        "SELECT r.owner_id::text AS uid FROM leaderboard_record r JOIN storage n ON n.collection = 'names' AND n.value->>'userId' = r.owner_id::text " +
+        "WHERE r.leaderboard_id = $1 AND n.value->>'name' ILIKE $2 ORDER BY r.score DESC, r.subscore DESC LIMIT $3", [id, q + "%", limit]);
+    return rows.map((r: any) => r.uid).filter((u: string) => !!u);
 }
 
 // Rows (by global rank) of the named players that have a record.
 function rkNameRows(nk: nkruntime.Nakama, id: string, name: string, limit = 20): { rows: any[]; total: number } {
-    const ids = rkFindIds(nk, name).slice(0, limit);
+    const ids = rkFindIds(nk, id, name, Math.max(1, Math.min(limit, 100)));
     if (!ids.length) return { rows: [], total: rkTotal(nk, id) };
     const l = nk.leaderboardRecordsList(id, ids, 1);
     const recs = (l.ownerRecords || []).slice().sort((a, b) => a.rank - b.rank);
@@ -151,6 +165,67 @@ function rkName(nk: nkruntime.Nakama, userId: string): string {
     if (p && p.displayName) return p.displayName;
     const u = nk.usersGetId([userId]);
     return u.length ? (u[0].displayName || u[0].username) : "";
+}
+
+// Records carry the display name of their last write: rename them too (account.ts ChangeUserDetailsRequest). Plain SQL:
+// leaderboardRecordWrite skips records whose score doesn't change, and the rank cache doesn't hold names.
+function rankingRename(nk: nkruntime.Nakama, logger: nkruntime.Logger, userId: string, name: string) {
+    try {
+        nk.sqlExec("UPDATE leaderboard_record SET username = $1 WHERE owner_id = $2", [name, userId]);
+    } catch (e) {
+        logger.warn("rankingRename %s: %s", userId, String(e));
+    }
+}
+
+// ---- profile statistics (Common.Net.PlayerStatistics/Statistics.cs, UiRework/ProfileStatisticsScreen.cs) ----
+// mp_stats counters per expansion/map: games, maps, winsMp, winsSp. Multiplayer: mp_game mpEloRows; singleplayer: rankingRecordSolo.
+const RK_MAX_MAPS = 200;
+
+function rkCount(st: any, field: string, key: string) {
+    st[field] = st[field] || {};
+    if (!key || (!(key in st[field]) && Object.keys(st[field]).length >= RK_MAX_MAPS)) return;
+    st[field][key] = (st[field][key] | 0) + 1;
+}
+
+// One finished game into the counters; caller writes st.
+function rankingCountGame(st: any, exp: string, map: string, won: boolean, solo: boolean) {
+    rkCount(st, "games", exp);
+    rkCount(st, "maps", String(map || "").slice(0, 64));
+    if (won) rkCount(st, solo ? "winsSp" : "winsMp", exp);
+}
+
+// scriptData.statistics: lists of {keys:{EXPANSION|MAP[, SINGLEPLAYER]}, SUM-COUNT|COUNT-WON}. Missing block = empty screen.
+function rkStatistics(st: any): any {
+    const list = (o: any, key: string, val: string, extra: any) => Object.keys(o || {}).map((k) => {
+        const keys: any = { [key]: k };
+        for (const x in extra) keys[x] = extra[x];
+        return { keys: keys, [val]: o[k] };
+    });
+    return {
+        gamesWon: list(st.winsSp, "EXPANSION", "SUM-COUNT", { SINGLEPLAYER: 1 }).concat(list(st.winsMp, "EXPANSION", "SUM-COUNT", { SINGLEPLAYER: 0 })),
+        mostPlayedExpansions: list(st.games, "EXPANSION", "COUNT-WON", {}),
+        mostPlayedMaps: list(st.maps, "MAP", "COUNT-WON", {}),
+    };
+}
+
+// Singleplayer GAME_WON (no session, SINGLEPLAYER 1): count it. Durable retries repeat the requestId -> counted once.
+function rankingRecordSolo(c: GsContext) {
+    const exp = String(c.req.EXPANSION || "");
+    if (ACC_EXPANSION_NAMES.indexOf(exp) < 0) return;
+    const rid = String(c.req.requestId || "");
+    for (let i = 0; i < 3; i++) {
+        const o = c.nk.storageRead([{ collection: MP_STATS, key: "main", userId: c.userId }])[0];
+        const st = o ? JSON.parse(JSON.stringify(o.value)) : { elo: {}, eloPlacement: {}, xp: 0, played: 0, won: 0 };
+        const done: string[] = st.soloDone || [];
+        if (rid && done.indexOf(rid) >= 0) return;
+        rankingCountGame(st, exp, c.req.MAP, c.req.WON == 1, true);
+        st.soloDone = done.concat(rid ? [rid] : []).slice(-20);
+        try {
+            c.nk.storageWrite([mpObj(MP_STATS, "main", st, o ? o.version : "*", c.userId)]);
+            return;
+        } catch (e) { /* concurrent write: re-read */ }
+    }
+    c.logger.warn("rankingRecordSolo %s: gave up after write conflicts", c.userId);
 }
 
 // ---- recording (called from mp_game GAME_WON) ----
@@ -320,7 +395,9 @@ function rkSeasonBoard(c: GsContext): string {
 
 const RANKING_HANDLERS: GsHandlerTable = {
     LEADERBOARD_GET_BRACKETS: () => ({ brackets: RK_BRACKETS }),
-    // rankPercentage = share of players strictly above me (0 = best) so a small community still has grandmasters
+    // rankPercentage = floor(rank*100/total), the client's own list formula (LeaderboardBrackets.GetBracketIdx(rank, count);
+    // integer thresholds -> floor keeps the bracket), so profile/result badges match the leaderboard icons.
+    // Only expansions past placement: a missing entry makes the result screen show "x/5 placement" (ResultStatisticsPlayerEntry.cs:384).
     LEADERBOARD_GET_BRACKETS_BY_ID: (c) => {
         const id = String(c.req.PLAYER_ID || c.userId);
         const out: any[] = [];
@@ -329,7 +406,7 @@ const RANKING_HANDLERS: GsHandlerTable = {
             rkEnsure(c.nk, lb);
             const l = c.nk.leaderboardRecordsList(lb, [id], 1);
             const r = (l.ownerRecords || [])[0];
-            if (r) out.push({ expansion: e, rankPercentage: Math.floor((r.rank - 1) * 100 / Math.max(l.rankCount || 1, 1)) });
+            if (r && rkGames(r) >= RK_PLACEMENT) out.push({ expansion: e, rankPercentage: Math.floor(r.rank * 100 / Math.max(l.rankCount || 1, 1)) });
         }
         return { brackets: RK_BRACKETS, rankPercentages: out };
     },
@@ -338,18 +415,16 @@ const RANKING_HANDLERS: GsHandlerTable = {
         return { leaderboard: r.rows, entryCount: r.total };
     },
     LEADERBOARD_FIND_RANKS_FOR_FRIENDS_LEADERBOARD: (c) => {
-        const rows = rkFriendRows(c, rkBoard(c, RK_LB_PLAYER + c.req.EXPANSION));
-        return { leaderboard: rows, entryCount: rows.length };
+        const id = rkBoard(c, RK_LB_PLAYER + c.req.EXPANSION);
+        return { leaderboard: rkFriendRows(c, id), entryCount: rkTotal(c.nk, id) };
     },
     LEADERBOARD_GAME_WON: () => ({}), LEADERBOARD_GAME_LOST: () => ({}), LEADERBOARD_SET_ELO: () => ({}), LEADERBOARD_SET_GUILD_ELO: () => ({}), LEADERBOARD_SET_SEASON_ELO: () => ({}), // dead from client
 
     LeaderboardDataRequest: (c) => {
         const id = rkBoard(c, c.req.leaderboardShortCode);
-        if (c.req.social) {
-            const rows = rkFriendRows(c, id);
-            const o = Math.max(0, c.req.offset | 0);
-            return gsRaw({ data: rows.slice(o, o + (c.req.entryCount | 0 || 20)), scriptData: { entryCount: rows.length } });
-        }
+        // `social` is ignored: LeaderboardScreen never resets _filterFriendsOnly (Toggle_OnlyFriendsAndGuildMembers), so after
+        // unticking "friends" every reload/scroll still says social:true. The friends view itself comes from
+        // LEADERBOARD_FIND_RANKS_FOR_FRIENDS_LEADERBOARD; cost: an expansion switch while it's ticked shows everyone.
         const p = rkPage(c.nk, id, c.req.offset, c.req.entryCount);
         return gsRaw({ data: p.records.map((r) => rkRow(r)), scriptData: { entryCount: p.total } });
     },
@@ -359,13 +434,22 @@ const RANKING_HANDLERS: GsHandlerTable = {
         try { recs = c.nk.leaderboardRecordsHaystack(id, c.userId, Math.max(1, Math.min(c.req.entryCount | 0 || 10, 100)), "", 0).records || []; } catch (e) { /* no record yet */ }
         return gsRaw({ data: recs.map((r) => rkRow(r)), scriptData: { entryCount: rkTotal(c.nk, id) } });
     },
+    // Own entry of the leaderboard screen. Must never be empty or an error for player boards: the client then dereferences a
+    // null entry (LeaderboardScreen.cs:129) and the list never renders. Unranked = placeholder without userId (PROD sends
+    // some other player's row) -> client shows the local player unranked. Other unknown boards (tournaments) -> [].
     LeaderboardsEntriesRequest: (c) => {
         const body: any = {};
         let n = 0;
         for (const code of c.req.leaderboards || []) {
-            const id = rkBoard(c, code);
+            const id = String(code || "");
+            const player = id.indexOf(RK_LB_PLAYER) === 0;
+            if (!rkKnown(c, id)) {
+                body[id] = player ? [RK_UNRANKED] : [];
+                continue;
+            }
+            rkEnsure(c.nk, id);
             const rec = rkRecord(c.nk, id, String(c.req.player || c.userId));
-            body[code] = rec ? [rkRow(rec)] : [];
+            body[id] = rec ? [rkRow(rec)] : player ? [RK_UNRANKED] : [];
             if (!n) n = rkTotal(c.nk, id);
         }
         body.scriptData = { entryCount: n };

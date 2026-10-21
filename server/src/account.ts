@@ -99,11 +99,13 @@ function profileFlat(c: GsContext, userId: string, p: Profile, own: boolean): an
     const ent = entFor(c, userId);
     const lv = rkLevel(st.xp);
     const elo: any = {};
-    for (const e of ACC_ELO_EXPANSIONS) elo[e] = (st.elo && st.elo[e]) || 1000.0;
+    // Played expansions only: the client shows "-" for a missing key and defaults to 1000 (PlayerDetails.TryGetElo),
+    // but a present 1000 shows as a rating with a bronze icon on the profile (ProfileStatisticsScreen.cs:80,155).
+    for (const e of ACC_ELO_EXPANSIONS) if (st.elo && st.elo[e] !== undefined) elo[e] = st.elo[e];
     const d: any = {
         userId: userId, displayName: p.displayName, authenticationType: p.authType, guildName: socGuildName(c.nk, userId), level: lv.level,
         xpForThisLevel: lv.xp, xpFromThisLevelToNext: lv.next, xpBoost: 1.0, karma: p.karma, elo: elo,
-        expansions: ent.expansions, expansionsViaPromoFlag: 0, achievementsProgress: p.achievements, achievements: [], eloPlacement: st.eloPlacement || {},
+        expansions: ent.expansions, expansionsViaPromoFlag: 0, achievementsProgress: p.achievements, achievements: [], eloPlacement: st.eloPlacement || {}, statistics: rkStatistics(st),
         online: true, ingame: false, playercolor: 1, // PROD sends these for the own profile (playercolor = PlayerColorIdx, default 1)
     };
     const a = accAvatarBlock(p);
@@ -220,6 +222,7 @@ const ACCOUNT_HANDLERS: GsHandlerTable = {
         p.displayName = name;
         profileSave(c, p);
         try { c.nk.accountUpdateId(c.userId, null, name); } catch (e) { c.logger.warn("accountUpdateId: %s", String(e)); }
+        rankingRename(c.nk, c.logger, c.userId, name);
         return {};
     },
 

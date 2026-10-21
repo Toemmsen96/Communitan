@@ -13,6 +13,7 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const EXPS = ["CatanBaseGame", "CatanSeafarer", "CatanCitiesAndKnights", "RivalsBaseGame", "RivalsAgeOfDarkness", "RivalsAgeOfEnlightenment", "CatanArrivalAtCatan", "CatanRiseOfTheInkas", "RivalsAgeOfEnlightenment_EOE", "CatanExplorers", "RivalsAgeOfDarkness_EOB", "CatanBigGame"];
 const LB = "PLAYER_ELO_RANKING.EXPANSION.";
+const users = []; // deleted at the end (ACCOUNT_DELETE_REQUEST) so test players never stay on the leaderboards
 
 async function mkUser(tag) {
     const session = await client.authenticateDevice(`rk-test-${tag}-${RUN}`, true, `rk${tag}${RUN}`);
@@ -21,6 +22,7 @@ async function mkUser(tag) {
     socket.onnotification = (n) => u.pushes.push(typeof n.content === "string" ? JSON.parse(n.content) : n.content);
     await socket.connect(session, true);
     u.socket = socket;
+    users.push(u);
     u.rpc = async (id, fields = {}) => {
         called.add(id);
         // communitanCaps: the mod's capability token; required by CATAN_SERVER_RNG=full servers, ignored otherwise (mp_rng.ts)
@@ -65,11 +67,15 @@ async function main() {
     await A.rpc("FRIEND_REQUEST_FRIENDSHIP", { USER_ID: B.id });
     await B.rpc("FRIEND_ACCEPT_FRIENDSHIP", { USER_ID: A.id });
     const gname = `RkGuild${RUN}`;
-    ok(sd(await A.rpc("GUILD_CREATE", { GUILD_NAME: gname, GUILD_DESCRIPTION: "d", GUILD_MESSAGE_OF_THE_DAY: "m" })).guildData, "guild created");
+    const gd = sd(await A.rpc("GUILD_CREATE", { GUILD_NAME: gname, GUILD_DESCRIPTION: "d", GUILD_MESSAGE_OF_THE_DAY: "m" })).guildData;
+    ok(gd, "guild created");
+    const D = await mkUser("d"); // guild member, not a friend: part of A's "friends and guild" view
+    await D.rpc("GUILD_JOIN_REQUEST", { GUILD_ID: gd.guildId || gd.id });
+    ok(!(await A.rpc("GUILD_ACCEPT_ASPIRANT", { PLAYER_ID: D.id })).error, "guild member joined");
 
     console.log("== static");
     let r = await A.rpc("LEADERBOARD_GET_BRACKETS");
-    ok(JSON.stringify(sd(r).brackets) === "[1,5,15,35,60]", "brackets");
+    ok(JSON.stringify(sd(r).brackets) === "[1,5,25,45,85]", "brackets (PROD values)");
     for (const e of EXPS) {
         r = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: LB + e, entryCount: 5, offset: 0, social: false, dontErrorOnNotSocial: true });
         ok(r["@class"] === ".LeaderboardDataResponse" && Array.isArray(r.data) && Number.isInteger(sd(r).entryCount), "LeaderboardData shape " + e);
@@ -84,8 +90,15 @@ async function main() {
     ok(Array.isArray(sd(r).leaderboard) && "entryCount" in sd(r), "FIND_RANKS_FOR_PLAYERNAMES shape (no record yet)");
     r = await A.rpc("LEADERBOARD_FIND_RANKS_FOR_FRIENDS_LEADERBOARD", { EXPANSION: "CatanBaseGame" });
     ok(Array.isArray(sd(r).leaderboard) && "entryCount" in sd(r), "FIND_RANKS_FOR_FRIENDS shape");
+    // unranked own entry: never empty (client NRE, LeaderboardScreen.cs:129) -> placeholder without userId
     r = await A.rpc("LeaderboardsEntriesRequest", { player: A.id, leaderboards: [LB + "CatanBaseGame"] });
-    ok(Array.isArray(r[LB + "CatanBaseGame"]) && r[LB + "CatanBaseGame"].length === 0 && "entryCount" in sd(r), "LeaderboardsEntries empty shape");
+    let pe = (r[LB + "CatanBaseGame"] || [])[0];
+    ok(!r.error && pe && pe.userId === "" && pe.rank === 0 && pe.gamesPlayed === 0 && "entryCount" in sd(r), "LeaderboardsEntries unranked placeholder");
+    r = await A.rpc("LeaderboardsEntriesRequest", { player: A.id, leaderboards: [LB + "Nope"] });
+    pe = (r[LB + "Nope"] || [])[0];
+    ok(!r.error && pe && pe.userId === "", "LeaderboardsEntries unknown expansion -> placeholder, no error");
+    r = await A.rpc("LeaderboardsEntriesRequest", { player: A.id, leaderboards: ["TOURNAMENT_AUTO.TOURNAMENT_ID.x"] });
+    ok(!r.error && Array.isArray(r["TOURNAMENT_AUTO.TOURNAMENT_ID.x"]) && r["TOURNAMENT_AUTO.TOURNAMENT_ID.x"].length === 0, "LeaderboardsEntries tournament -> []");
     r = await A.rpc("LEADERBOARD_GET_BRACKETS_BY_ID", { PLAYER_ID: A.id });
     ok(Array.isArray(sd(r).brackets) && Array.isArray(sd(r).rankPercentages), "BRACKETS_BY_ID shape");
     for (const id of ["TOURNAMENT_GET_CONFIG", "TOURNAMENT_GET_LIST", "TOURNAMENT_GET_MY_LIST", "TOURNAMENT_GET_PARTICIPANTS", "TOURNAMENT_GET_GAME_RESULTS"]) ok(!(await A.rpc(id)).error, id);
@@ -113,6 +126,9 @@ async function main() {
     ok(g2 && !g2.win_lose.find((x) => x.playerId === C.id).isSeasonParticipant, "non-participant has no season fields");
     const g3 = await game(B, C, { mt: "CUSTOM_MATCH" });
     ok(g3 && g3.win_lose.every((x) => x.increaseElo === 0), "custom match unranked");
+    const gd1 = await game(D, C);
+    ok(gd1, "guild member D ranked game");
+    const incD = gd1 ? gd1.win_lose.find((x) => x.playerId === D.id).increaseElo : 0;
     const eloA = 1000 + a1.increaseElo + g2.win_lose.find((x) => x.playerId === A.id).increaseElo;
 
     console.log("== queries");
@@ -124,7 +140,10 @@ async function main() {
     const off = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: LB + "CatanBaseGame", entryCount: 1, offset: 1 });
     ok(off.data.length === 1 && off.data[0].userId === r.data[1].userId && sd(off).entryCount === r.data.length, "offset paging");
     r = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: LB + "CatanBaseGame", entryCount: 100, offset: 0, social: true });
-    ok(r.data.length === 2 && r.data.every((x) => [A.id, B.id].includes(x.userId)) && r.data[0].rank === 1 && r.data[1].rank === 2 && sd(r).entryCount === 2, "social = me + friends, ranked among them");
+    const total = sd(off).entryCount;
+    const glob = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: LB + "CatanBaseGame", entryCount: 100, offset: 0 });
+    const gRank = (id) => (glob.data.find((x) => x.userId === id) || {}).rank;
+    ok(r.data.length === glob.data.length && sd(r).entryCount === total, "social ignored on LeaderboardData (client never resets its friends flag)");
     r = await A.rpc("LeaderboardsEntriesRequest", { player: A.id, leaderboards: [LB + "CatanBaseGame"] });
     const e = r[LB + "CatanBaseGame"][0];
     ok(e && e.score === eloA * 1e6 && e.gamesPlayed === 2 && e.rank >= 1 && e.userId === A.id && sd(r).entryCount >= 3, "LeaderboardsEntries own entry");
@@ -132,21 +151,37 @@ async function main() {
     ok(r.data.some((x) => x.userId === A.id) && r.data.every(rowOk), "around me");
     r = await A.rpc("LEADERBOARD_FIND_RANKS_FOR_PLAYERNAMES", { PLAYERNAME: `Rk`, EXPANSION: "CatanBaseGame" });
     ok(sd(r).leaderboard.length >= 3 && sd(r).leaderboard.every(rowOk) && sd(r).entryCount >= 3, "FIND_RANKS_FOR_PLAYERNAMES prefix");
+    const topRk = Math.min(...glob.data.filter((x) => x.userName.startsWith("Rk")).map((x) => x.rank));
+    ok(sd(r).leaderboard[0].rank === topRk && sd(r).leaderboard.every((x, i) => i === 0 || x.rank >= sd(r).leaderboard[i - 1].rank), "name search: best ranked first");
     r = await A.rpc("LEADERBOARD_FIND_RANKS_FOR_PLAYERNAMES", { PLAYERNAME: B.name.toLowerCase(), EXPANSION: "CatanBaseGame" });
     ok(sd(r).leaderboard.length === 1 && sd(r).leaderboard[0].userId === B.id, "FIND_RANKS_FOR_PLAYERNAMES exact (case-insensitive)");
     r = await A.rpc("LEADERBOARD_FIND_RANKS_FOR_FRIENDS_LEADERBOARD", { EXPANSION: "CatanBaseGame" });
-    ok(sd(r).leaderboard.map((x) => x.userId).join() === [A.id, B.id].join() && sd(r).entryCount === 2, "FIND_RANKS_FOR_FRIENDS");
+    ok(sd(r).leaderboard.map((x) => x.userId).sort().join() === [A.id, B.id, D.id].sort().join() && sd(r).leaderboard.every((x) => x.rank === gRank(x.userId)) && sd(r).entryCount === total, "FIND_RANKS_FOR_FRIENDS global ranks");
     r = await A.rpc("LEADERBOARD_GET_BRACKETS_BY_ID", { PLAYER_ID: A.id });
-    ok(sd(r).rankPercentages.length === 1 && sd(r).rankPercentages[0].expansion === "CatanBaseGame" && Number.isInteger(sd(r).rankPercentages[0].rankPercentage), "BRACKETS_BY_ID has played expansion");
+    ok(sd(r).rankPercentages.length === 0, "BRACKETS_BY_ID: no bracket during placement (2/5 games)");
+    r = await A.rpc("SEASON_GET_LEADERBOARD_FOR_PLAYERNAME", { SEASON_ID: "Season1", PLAYERNAME: A.id, ENTRY_COUNT: 1 });
+    ok(sd(r).leaderboard.length === 1 && sd(r).leaderboard[0].userId === A.id, "PLAYERNAME = user id (profile season ELO)");
     r = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: "GUILD_ELO_RANKING", entryCount: 500, offset: 0, social: false });
     const gr = r.data.find((x) => x.teamName === gname);
-    ok(gr && gr["LAST-ELO"] === eloA * 1e6, "guild ELO = 1000 + member increases");
-    ok(gr && gr["SUM-COUNT"] === 2 && gr.teamId && gr.rank >= 1, "guild row keys (teamId, SUM-COUNT)");
+    ok(gr && gr["LAST-ELO"] === (eloA + incD) * 1e6, "guild ELO = 1000 + member increases");
+    ok(gr && gr["SUM-COUNT"] === 3 && gr.teamId && gr.rank >= 1, "guild row keys (teamId, SUM-COUNT)");
     r = await A.rpc("GUILD_GET_ELO_SORTED_LIST");
     ok(!r.error, "GUILD_GET_ELO_SORTED_LIST");
 
     console.log("== account (single source)");
+    const soloReq = `solo_${RUN}`;
+    for (let i = 0; i < 2; i++) await A.rpc("GAME_WON", { requestId: soloReq, CHALLENGE_ID: "", WON: 1, EXPANSION: "CatanSeafarer", MAP: "M1", SINGLEPLAYER: 1 });
+    await A.rpc("GAME_WON", { CHALLENGE_ID: "", WON: 0, EXPANSION: "CatanSeafarer", MAP: "M1", SINGLEPLAYER: 1 });
     r = await A.rpc("AccountDetailsRequest");
+    const stx = sd(r).statistics || {};
+    const won = (exp, sp) => (stx.gamesWon || []).find((x) => x.keys.EXPANSION === exp && x.keys.SINGLEPLAYER === sp);
+    ok(won("CatanBaseGame", 0) && won("CatanBaseGame", 0)["SUM-COUNT"] === 2, "statistics: multiplayer wins per expansion");
+    ok(won("CatanSeafarer", 1) && won("CatanSeafarer", 1)["SUM-COUNT"] === 1, "statistics: singleplayer win counted once (durable retry)");
+    const played = (k, list, key) => ((stx[list] || []).find((x) => x.keys[key] === k) || {})["COUNT-WON"];
+    ok(played("CatanBaseGame", "mostPlayedExpansions", "EXPANSION") === 2 && played("CatanSeafarer", "mostPlayedExpansions", "EXPANSION") === 2, "statistics: games per expansion");
+    ok(played("S", "mostPlayedMaps", "MAP") === 2 && played("M1", "mostPlayedMaps", "MAP") === 2, "statistics: games per map");
+    ok((await B.rpc("ACCOUNT_GET_DETAILS_BY_ID", { PLAYER_ID: A.id })).scriptData.statistics.gamesWon.length === 2, "statistics in other players' details");
+    ok(Object.keys(sd(r).elo).join() === "CatanBaseGame", "elo only for played expansions");
     ok(sd(r).elo.CatanBaseGame === eloA && sd(r).eloPlacement.CatanBaseGame === 2 && sd(r).level === 25 && sd(r).xpForThisLevel === 200 && sd(r).xpFromThisLevelToNext === 600, "AccountDetails elo/xp/level from mp_stats");
     r = await B.rpc("ACCOUNT_GET_DETAILS_BY_ID", { PLAYER_ID: A.id });
     ok(sd(r).elo.CatanBaseGame === eloA, "by-id elo");
@@ -176,7 +211,19 @@ async function main() {
     ok(lp && lp.data.level === 26 && lp.data.tickets === 0, "LEVEL_PROGRESS push when XP crosses a level");
     r = await A.rpc("AccountDetailsRequest");
     ok(sd(r).level === 26 && sd(r).xpFromThisLevelToNext === 620, "level 26 in account details");
-    for (const u of [A, B, C]) u.socket.disconnect(false);
+
+    console.log("== brackets after placement, rename");
+    r = await A.rpc("LEADERBOARD_GET_BRACKETS_BY_ID", { PLAYER_ID: A.id });
+    const own = (await A.rpc("LeaderboardsEntriesRequest", { player: A.id, leaderboards: [LB + "CatanBaseGame"] }));
+    const ownRow = own[LB + "CatanBaseGame"][0];
+    const bp = sd(r).rankPercentages.find((x) => x.expansion === "CatanBaseGame");
+    ok(bp && bp.rankPercentage === Math.floor(ownRow.rank * 100 / sd(own).entryCount), "BRACKETS_BY_ID = floor(rank*100/total), as the client's list");
+    const renamed = `RkRen${RUN}`;
+    ok(!(await B.rpc("ChangeUserDetailsRequest", { displayName: renamed })).error, "rename");
+    r = await A.rpc("LeaderboardDataRequest", { leaderboardShortCode: LB + "CatanBaseGame", entryCount: 100, offset: 0 });
+    ok((r.data.find((x) => x.userId === B.id) || {}).userName === renamed, "leaderboard shows the new name");
+    r = await A.rpc("SEASON_GET_LEADERBOARD", { SEASON_ID: "Season1", OFFSET: 0, COUNT: 1000 });
+    ok((sd(r).leaderboard.find((x) => x.userId === B.id) || {}).userName === renamed, "season leaderboard shows the new name");
 }
 
 function serverErrors() {
@@ -190,7 +237,20 @@ function serverErrors() {
     }
 }
 
+async function cleanup() {
+    for (const u of users) {
+        try { await u.rpc("ACCOUNT_DELETE_REQUEST"); } catch (e) { console.error("cleanup", u.tag, e.message || e); }
+        try { u.socket.disconnect(false); } catch (e) { /* gone */ }
+    }
+    const left = await client.authenticateDevice(`rk-test-check-${RUN}`, true);
+    const r = await client.rpc(left, "LeaderboardDataRequest", { "@class": ".LeaderboardDataRequest", requestId: "x", leaderboardShortCode: LB + "CatanBaseGame", entryCount: 1000, offset: 0 });
+    const p = typeof r.payload === "string" ? JSON.parse(r.payload) : r.payload;
+    ok(!(p.data || []).some((x) => users.some((u) => u.id === x.userId)), "test players removed from the leaderboard");
+    await client.rpc(left, "ACCOUNT_DELETE_REQUEST", { "@class": ".LogEventRequest", eventKey: "ACCOUNT_DELETE_REQUEST", requestId: "y" });
+}
+
 try { await main(); } catch (e) { failures++; console.error("FAIL: exception", e); }
+try { await cleanup(); } catch (e) { failures++; console.error("FAIL: cleanup", e); }
 const errs = serverErrors();
 for (const l of errs) console.error("SERVER LOG:", l);
 ok(errs.length === 0, "server log free of errors");

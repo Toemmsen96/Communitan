@@ -68,6 +68,7 @@ function unblob(b64) {
     return out;
 }
 
+const users = []; // deleted at the end so test players never stay on the leaderboards
 async function mkUser(tag) {
     const session = await client.authenticateDevice(`mp-test-${tag}-${RUN}`, true, `mp${tag}${RUN}`);
     const socket = client.createSocket(SSL, false);
@@ -86,6 +87,7 @@ async function mkUser(tag) {
         if (p.requestId !== req.requestId) throw new Error(`${id}: requestId not echoed`);
         return p;
     };
+    users.push(u);
     return u;
 }
 
@@ -479,6 +481,9 @@ try {
 } catch (e) {
     failures++;
     console.error("FAIL: exception", e);
+}
+for (const u of users) {
+    try { await u.rpc("ACCOUNT_DELETE_REQUEST"); } catch (e) { console.error("cleanup", u.tag, e.message || e); }
 }
 const errs = serverErrors();
 for (const l of errs) console.error("SERVER ERROR:", l);
