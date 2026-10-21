@@ -8,6 +8,24 @@ function mpUniq(a: string[]): string[] {
     return r;
 }
 
+// CATAN_SHUFFLE_FREEPLAY=on: base-game Free Play gets a shuffled board. The client's SetFreeMatch sets useShuffleMap=false
+// (fixed "First Island" every game, MultiplayerGameInformation.cs:487-508); every client takes useShuffleMap from the
+// server's game info (UpdateFromGSData), so the match and the stored session both carry it.
+function mpFreeplayShuffle(ctx: nkruntime.Context, gi: any) {
+    const on = String((ctx.env && ctx.env["CATAN_SHUFFLE_FREEPLAY"]) || "off").trim().toLowerCase();
+    const exps: string[] = gi.expansions || [];
+    if ((on === "on" || on === "true" || on === "1") && gi.matchType === "QUICK_MATCH" && exps.length === 1 && exps[0] === "CatanBaseGame") gi.useShuffleMap = true;
+}
+
+// Free Play tickets ask for minCount..69 players (the client's QueryConfig). With more players searching than that, the
+// matchmaker forms one big match; the client then keeps only maps for that size (NakamaInstance.FinalizeMatchmaking:
+// >=5 players -> 5-6 player maps only), finds none and throws -> every client re-queues. Free Play = exactly minCount.
+// Called from the MatchmakerAdd before-hook (status.ts; one before-hook per message).
+function mpCapMatchmaker(a: nkruntime.MatchmakerAddMessage | undefined) {
+    if (!a || !a.stringProperties || a.stringProperties.matchType !== "QUICK_MATCH") return;
+    if (a.minCount >= 2 && a.maxCount > a.minCount) a.maxCount = a.minCount;
+}
+
 const MP_MM_REPLAY_MS = 120000; // ASSUMPTION: all participants call MatchmakingRequest within seconds of the matchmaker match
 
 function mpMatchmaking(c: GsContext): any {
@@ -28,6 +46,7 @@ function mpMatchmaking(c: GsContext): any {
         for (const k in src) gi[k] = src[k];
         gi.sortedPlayerIds = ids;
         gi.challengeId = matchId;
+        mpFreeplayShuffle(c.ctx, gi);
         return { matchId: matchId, ids: ids, gameInfo: gi, shortCode: r.matchShortCode || "", created: Date.now() };
     })!;
     // MatchmakingRequest is a durable request: the client persists it and replays it after a restart. A replay for an
@@ -60,6 +79,7 @@ function mpCreateChallenge(c: GsContext): any {
     const sd = r.scriptData || {};
     const id: string = sd.challengeInstanceId || c.nk.uuidv4();
     const gi: any = sd.gameInfo || {};
+    mpFreeplayShuffle(c.ctx, gi);
     const humans = mpUniq([c.userId].concat(r.usersToChallenge || []));
     let seats: string[] = (gi.sortedPlayerIds || []).slice();
     if (!seats.length) seats = humans.slice();

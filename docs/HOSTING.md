@@ -59,6 +59,10 @@ The server never sends email (no SMTP support yet).
   - **Not tamper-proof.** The claim comes from the player's PC. A modified client can claim purchases it does not have; the server cannot verify them against USM. `owned` only makes honest mirroring easy, it does not prove ownership.
 - Entitlements are computed when they are read, so switching the mode applies to existing accounts immediately. Accounts created by older versions of this server (everything unlocked, 99999 gold) are reset once to the defaults above.
 
+## Free Play board
+The game's base-game Free Play always uses the fixed "First Island" board (the client turns map shuffling off). Set
+`CATAN_SHUFFLE_FREEPLAY=on` in `.env` for a shuffled board every game (base game only; all clients take it from the server).
+
 ## Game content (almanac, item names)
 The repository and the server zip contain **no game content**: no almanac, no item/shop names or descriptions, no terms. The catalogs in `data/` hold only ids and technical fields; the server shows item and product names derived from their ids (e.g. "Board Piece Viking"). Names you add yourself to the data files (`Name`/`Description`, or `itemDef.displayName`/`description`) are shown instead.
 - **Almanac (optional):** without `data/almanac.json` players keep the almanac their game already has (the bundled English one, or the one in their language from the official servers). To serve it from the server anyway, generate it from **your own** game install: `python3 tools/gen-almanac.py "<game>/CatanUniverse_Data"` (writes `data/almanac.json`), then `docker compose restart nakama`. It is English and is sent only to English clients; others keep theirs. Do not publish the generated file: it is USM's text.

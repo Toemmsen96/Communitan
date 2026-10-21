@@ -39,6 +39,8 @@ services:
       CATAN_SERVER_RNG: ${CATAN_SERVER_RNG:-off}
       # free (default): what a free official account has; owned: + each player's own official purchases (docs/HOSTING.md)
       CATAN_ENTITLEMENTS: ${CATAN_ENTITLEMENTS:-free}
+      # off (default): base-game Free Play uses the game's fixed "First Island" board; on: shuffled board every game
+      CATAN_SHUFFLE_FREEPLAY: ${CATAN_SHUFFLE_FREEPLAY:-off}
     # extra Nakama flags: `command:` items after the first (which becomes $$0), e.g. from an uncommitted override file
     entrypoint:
       - /bin/sh
@@ -60,6 +62,7 @@ services:
           --runtime.env "CATAN_EMAIL_VERIFICATION=$$CATAN_EMAIL_VERIFICATION" \
           --runtime.env "CATAN_SERVER_RNG=$$CATAN_SERVER_RNG" \
           --runtime.env "CATAN_ENTITLEMENTS=$$CATAN_ENTITLEMENTS" \
+          --runtime.env "CATAN_SHUFFLE_FREEPLAY=$$CATAN_SHUFFLE_FREEPLAY" \
           "$$@"
     volumes:
       - ./local.yml:/nakama/data/local.yml:ro

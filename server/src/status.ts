@@ -36,6 +36,11 @@ function stDelete(nk: nkruntime.Nakama, collection: string, key: string, userId:
 // ---- hooks (never block the original message) ----
 function stBeforeMatchmakerAdd(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, env: nkruntime.EnvelopeMatchmakerAdd): nkruntime.EnvelopeMatchmakerAdd {
     try {
+        mpCapMatchmaker(env.matchmakerAdd); // mp_match.ts: Free Play = exact player count
+    } catch (e) {
+        logger.warn("matchmaker cap failed: %s", String(e));
+    }
+    try {
         const a = env.matchmakerAdd;
         const sp = (a && a.stringProperties) || {};
         if (ctx.userId && a) {
