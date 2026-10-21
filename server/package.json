@@ -5,10 +5,11 @@
     "build": "tsc && node scripts/bundle.mjs",
     "test:mp": "node test/mp.test.mjs",
     "test:ranking": "node test/ranking.test.mjs",
-    "test": "set -a; [ -f .env ] && . ./.env; set +a; bash test/smoke.sh && bash test/social.sh && node test/mp.test.mjs && node test/ranking.test.mjs && node test/status.test.mjs && node test/entitlements.test.mjs && node test/referee.test.mjs",
+    "test": "set -a; [ -f .env ] && . ./.env; set +a; bash test/smoke.sh && bash test/social.sh && node test/mp.test.mjs && node test/ranking.test.mjs && node test/status.test.mjs && node test/entitlements.test.mjs && node test/referee.test.mjs && node test/modes.test.mjs",
     "test:status": "node test/status.test.mjs",
     "test:entitlements": "node test/entitlements.test.mjs",
-    "test:referee": "node test/referee.test.mjs"
+    "test:referee": "node test/referee.test.mjs",
+    "test:modes": "node test/modes.test.mjs"
   },
   "devDependencies": {
     "@heroiclabs/nakama-js": "^2.8.0",

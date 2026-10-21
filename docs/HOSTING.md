@@ -63,6 +63,14 @@ The server never sends email (no SMTP support yet).
 The game's base-game Free Play always uses the fixed "First Island" board (the client turns map shuffling off). Set
 `CATAN_SHUFFLE_FREEPLAY=on` in `.env` for a shuffled board every game (base game only; all clients take it from the server).
 
+## Game modes (custom rules)
+`data/modes/<id>.json` (listed in `data/modes/index.json`, read at first use; restart Nakama after edits) offers
+**game modes**: base game with a few rule switches, e.g. `robbers` (every roll is a 7, each round every player gets
+2 random resources). Players need a current mod (others get "update the Communitan mod"); mode games are **unranked**
+(no ELO, season or leaderboard changes; profile statistics still count) and have their own Free Play queue per mode.
+Modes are listed in the status (`gameModes`) and by RPC `COMMUNITAN_MODES`. Switches and file format:
+[design/game-modes.md](design/game-modes.md). The referee (L3) checks mode games with the same rules.
+
 ## Game content (almanac, item names)
 The repository and the server zip contain **no game content**: no almanac, no item/shop names or descriptions, no terms. The catalogs in `data/` hold only ids and technical fields; the server shows item and product names derived from their ids (e.g. "Board Piece Viking"). Names you add yourself to the data files (`Name`/`Description`, or `itemDef.displayName`/`description`) are shown instead.
 - **Almanac (optional):** without `data/almanac.json` players keep the almanac their game already has (the bundled English one, or the one in their language from the official servers). To serve it from the server anyway, generate it from **your own** game install: `python3 tools/gen-almanac.py "<game>/CatanUniverse_Data"` (writes `data/almanac.json`), then `docker compose restart nakama`. It is English and is sent only to English clients; others keep theirs. Do not publish the generated file: it is USM's text.

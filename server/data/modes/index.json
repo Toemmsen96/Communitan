@@ -1,0 +1,4 @@
+{
+  "_comment": "Game modes offered by this server (docs/design/game-modes.md): one <id>.json per entry. Remove an id to stop offering it.",
+  "modes": ["robbers"]
+}

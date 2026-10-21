@@ -1,0 +1,12 @@
+{
+  "id": "robbers",
+  "name": "Robbers",
+  "description": "Every roll is a 7: the robber strikes every turn. At the start of each round every player gets 2 random resources.",
+  "expansions": ["CatanBaseGame"],
+  "players": { "min": 3, "max": 4 },
+  "gameInfo": { "useShuffleMap": false },
+  "rules": {
+    "dice": { "fixedSum": 7 },
+    "roundGrant": { "count": 2 }
+  }
+}

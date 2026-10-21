@@ -178,7 +178,12 @@ function rngPublic(r: RngRec | null | undefined): any {
 function rngRollDice(nk: nkruntime.Nakama, s: MpSession, n: number): number[] {
     const rb = new RngBytes(nk);
     const d: number[] = [];
-    if (s.gameInfo && s.gameInfo.diceMode) {
+    const sum = modeFixedSum(s); // game mode dice.fixedSum (modes.ts): uniform over the pairs with that sum, no dice deck
+    if (sum) {
+        const lo = Math.max(1, sum - 6), hi = Math.min(6, sum - 1);
+        const a = lo + rb.below(hi - lo + 1);
+        d.push(a, sum - a);
+    } else if (s.gameInfo && s.gameInfo.diceMode) {
         if (!s.rngStack || !s.rngStack.length) {
             s.rngStack = [];
             for (let i = 0; i < 36; i++) s.rngStack.push(i);

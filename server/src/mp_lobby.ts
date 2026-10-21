@@ -1,7 +1,8 @@
 // Custom match lobby. Contract: docs/protocol/multiplayer.md B2, C.2
 // Lobby id doubles as challengeId (client: MultiplayerGameInformation falls back ChallengeId = lobbyId).
 
-interface MpLobby { lobbyId: string; ownerId: string; members: string[]; invited: string[]; ready: string[]; gameInfo: any }
+// modeCaps: members whose mod can play custom game modes (modes.ts modeLobbyNoteCaps)
+interface MpLobby { lobbyId: string; ownerId: string; members: string[]; invited: string[]; ready: string[]; gameInfo: any; modeCaps?: string[] }
 
 // LobbyUpdate shape. lobbyPlayers = members only (client does lobbyPlayers.Except(invitedPlayers), so this is equivalent).
 function mpLobbyUpdate(c: GsContext, l: MpLobby): any {
@@ -79,6 +80,8 @@ const MP_LOBBY_HANDLERS: GsHandlerTable = {
     LOBBY_CREATE: (c) => {
         rngRequireCaps(c);
         const l: MpLobby = { lobbyId: c.nk.uuidv4(), ownerId: c.userId, members: [c.userId], invited: [], ready: [], gameInfo: c.req.GAME_INFO || {} };
+        modeLobbyNoteCaps(c, l);
+        modeLobbyApply(c, l, l.gameInfo, false); // game mode (modes.ts): validated, overrides applied
         mpMutate<MpLobby>(c.nk, MP_LOBBIES, l.lobbyId, () => l);
         return mpLobbyUpdate(c, l);
     },
@@ -113,8 +116,10 @@ const MP_LOBBY_HANDLERS: GsHandlerTable = {
         rngRequireCaps(c);
         const l = mpLobbyMutate(c, (l) => {
             if (l.members.indexOf(c.userId) >= 0) return false;
+            modeLobbyAccept(c, l); // mode lobby: only clients with the "modes-1" capability
             l.invited = l.invited.filter((x) => x !== c.userId);
             l.members.push(c.userId);
+            modeLobbyNoteCaps(c, l);
         });
         mpLobbyPush(c, l, "LOBBY_UPDATE_PLAYERS", l.members.filter((u) => u !== c.userId));
         return mpLobbyUpdate(c, l);
@@ -132,6 +137,7 @@ const MP_LOBBY_HANDLERS: GsHandlerTable = {
         const l = mpLobbyMutate(c, (l) => {
             l.ready = l.ready.filter((x) => x !== c.userId);
             if (ready) l.ready.push(c.userId);
+            modeLobbyNoteCaps(c, l);
         });
         mpLobbyPush(c, l, "LOBBY_UPDATE_PLAYERS", l.members);
         return {};
@@ -139,8 +145,10 @@ const MP_LOBBY_HANDLERS: GsHandlerTable = {
     LOBBY_UPDATE_GAME_INFO: (c) => {
         const rm: string = c.req.REMOVE_PLAYER_ID || "-";
         const l = mpLobbyMutate(c, (l) => {
+            modeLobbyNoteCaps(c, l);
             if (c.req.GAME_INFO) l.gameInfo = c.req.GAME_INFO;
             if (rm !== "-") mpLobbyDrop(l, rm);
+            if (c.req.GAME_INFO) modeLobbyApply(c, l, l.gameInfo, false);
         });
         mpLobbyPush(c, l, "LOBBY_UPDATE_GAMEINFO", l.members.filter((u) => u !== c.userId));
         return {};
@@ -166,6 +174,7 @@ const MP_LOBBY_HANDLERS: GsHandlerTable = {
         const l = mpLobbyMutate(c, (l) => {
             can = l.ownerId === c.userId && l.members.every((u) => u === l.ownerId || l.ready.indexOf(u) >= 0);
             if (!can) return false;
+            modeLobbyApply(c, l, gi, true); // mode: every member's caps + the mode's seat count
             l.gameInfo = gi;
         });
         if (!can) return { canStart: false };

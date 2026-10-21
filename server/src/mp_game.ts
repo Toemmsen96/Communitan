@@ -11,7 +11,7 @@ function mpAction(c: GsContext, turntimer: boolean): any {
     let blob = String(r.GAME_ACTION_STATE || "");
     const ranOut: string = r.TURNTIMER_RAN_OUT_PLAYER_ID || "-";
     const hash = c.nk.sha256Hash(seat + ":" + aid + ":" + blob);
-    const caps = rngHasCaps(c);
+    const caps = rngHasCaps(c), modeCaps = modeHasCaps(c);
     return mpGame(c, (s, fx, now) => {
         if (mpIsKicked(s, c.userId)) {
             fx.fail = MP_ERR.kicked;
@@ -21,6 +21,11 @@ function mpAction(c: GsContext, turntimer: boolean): any {
         if (full && !caps) {
             fx.fail = RNG_ERR_CAPS;
             fx.failMsg = RNG_CAPS_MSG;
+            return {};
+        }
+        if (modeOf(s) && !modeCaps) {
+            fx.fail = RNG_ERR_CAPS;
+            fx.failMsg = MODE_CAPS_MSG;
             return {};
         }
         mpUnpause(s, c.userId, now, fx);
@@ -153,8 +158,13 @@ function mpActions(c: GsContext, s: MpSession): { a: string[]; r: (RngRec | null
     return { a: out.slice(0, s.nActions), r: recs.slice(0, s.nActions), by: by.slice(0, s.nActions) };
 }
 
-// "full" sessions: clients without the mod capability must not play (they would desync); clear popup instead.
+// "full" sessions and game modes: clients without the mod capability must not play (they would desync); clear popup instead.
 function mpRngGate(c: GsContext, s: MpSession, fx: MpFx): boolean {
+    if (modeOf(s) && !modeHasCaps(c)) {
+        fx.fail = RNG_ERR_CAPS;
+        fx.failMsg = MODE_CAPS_MSG;
+        return false;
+    }
     if (s.rng !== "full" || rngHasCaps(c)) return true;
     fx.fail = RNG_ERR_CAPS;
     fx.failMsg = RNG_CAPS_MSG;
@@ -204,7 +214,7 @@ function mpEloRows(c: GsContext, s: MpSession, fx: MpFx, adjust?: (rank: { [id: 
     if (adjust) adjust(rank);
     let exp: string = r.EXPANSION || ((s.gameInfo.expansions || [])[0]) || "CatanBaseGame";
     const mt = s.gameInfo.matchType;
-    const ranked = mt === "AUTO_MATCH" || mt === "QUICK_MATCH"; // ASSUMPTION: custom matches are unranked
+    const ranked = (mt === "AUTO_MATCH" || mt === "QUICK_MATCH") && !modeOf(s); // ASSUMPTION: custom matches are unranked; game modes always (modes.ts)
     const stats = mpStatsGet(c.nk, s.humans);
     const ranked_h = s.humans.filter((u) => rank[u] !== undefined);
     const before: { [id: string]: number } = {};

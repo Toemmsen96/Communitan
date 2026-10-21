@@ -279,7 +279,7 @@ function rankingRecordResult(nk: nkruntime.Nakama, logger: nkruntime.Logger, res
 function rankingRecordGame(nk: nkruntime.Nakama, logger: nkruntime.Logger, s: MpSession, reqExp: string, rows: any[], fx: MpFx) {
     const exp: string = reqExp || ((s.gameInfo.expansions || [])[0]) || "CatanBaseGame";
     const mt = s.gameInfo.matchType;
-    const ranked = mt === "AUTO_MATCH" || mt === "QUICK_MATCH";
+    const ranked = (mt === "AUTO_MATCH" || mt === "QUICK_MATCH") && !modeOf(s); // game modes: unranked (modes.ts)
     const stats = mpStatsGet(nk, s.humans);
     const out: RkResult[] = [];
     for (const row of rows) {

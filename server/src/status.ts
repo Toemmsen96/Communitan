@@ -5,7 +5,7 @@
 //   "communitan_online"/"seen" {ts}: refreshed by authenticated RPCs (rpcDispatch); a user counts as online only while
 //     Nakama's status registry says so (socket connected).
 //   playing: RUNNING "sessions" docs (mp_session.ts), humans not kicked/paused whose last request is < 2 min old.
-// Mode key: "<matchType>|<expansions, sorted, comma-joined>|<min>-<max>", e.g. "QUICK_MATCH|CatanBaseGame|3-3"
+// Mode key: "<matchType>|<expansions, sorted, comma-joined>|<min>-<max>[|<game mode>]", e.g. "QUICK_MATCH|CatanBaseGame|3-3"
 // (matchType/expansions = matchmaker string properties, min/max = matchmaker counts; sessions use gameInfo's fields).
 
 const ST_SEARCH = "communitan_search";
@@ -15,10 +15,10 @@ const ST_PLAY_TTL_MS = 120000;
 const ST_CACHE_MS = 2000; // per VM; the mod polls every 5 s while searching
 let ST_CACHE: { at: number; value: any } | null = null;
 
-function stModeKey(matchType: any, expansions: any, min: any, max: any): string {
+function stModeKey(matchType: any, expansions: any, min: any, max: any, gameMode?: any): string {
     const list: string[] = Array.isArray(expansions) ? expansions.map(String) : String(expansions || "").split(/\s+/);
     const ex = list.filter((x) => x).sort().join(",");
-    return (matchType ? String(matchType) : "?") + "|" + ex + "|" + (Number(min) | 0) + "-" + (Number(max) | 0);
+    return (matchType ? String(matchType) : "?") + "|" + ex + "|" + (Number(min) | 0) + "-" + (Number(max) | 0) + (gameMode ? "|" + String(gameMode) : "");
 }
 
 function stDoc(collection: string, key: string, userId: string, value: any): nkruntime.StorageWriteRequest {
@@ -41,10 +41,15 @@ function stBeforeMatchmakerAdd(ctx: nkruntime.Context, logger: nkruntime.Logger,
         logger.warn("matchmaker cap failed: %s", String(e));
     }
     try {
+        modeMatchmaker(ctx, nk, logger, env.matchmakerAdd); // modes.ts: own pool per game mode
+    } catch (e) {
+        logger.warn("matchmaker mode filter failed: %s", String(e));
+    }
+    try {
         const a = env.matchmakerAdd;
         const sp = (a && a.stringProperties) || {};
         if (ctx.userId && a) {
-            nk.storageWrite([stDoc(ST_SEARCH, "ticket", ctx.userId, { mode: stModeKey(sp.matchType, sp.expansions, a.minCount, a.maxCount), ts: Date.now() })]);
+            nk.storageWrite([stDoc(ST_SEARCH, "ticket", ctx.userId, { mode: stModeKey(sp.matchType, sp.expansions, a.minCount, a.maxCount, sp.ccsMode), ts: Date.now() })]);
         }
     } catch (e) {
         logger.warn("status: matchmaker add tracking failed: %s", String(e));
@@ -117,7 +122,7 @@ function stCompute(c: { ctx: nkruntime.Context; nk: nkruntime.Nakama; logger: nk
         const s = stParse(r.v);
         if (!s || !s.humans) continue;
         const gi = s.gameInfo || {};
-        const key = stModeKey(gi.matchType || gi.connectionType, gi.expansions, gi.minPlayers, gi.maxPlayers);
+        const key = stModeKey(gi.matchType || gi.connectionType, gi.expansions, gi.minPlayers, gi.maxPlayers, gi.ccsMode);
         for (const u of s.humans as string[]) {
             const p = s.pres && s.pres[u];
             if (!p || p.kicked || p.paused || now - (p.seen || 0) > ST_PLAY_TTL_MS || players[u]) continue;
@@ -144,6 +149,9 @@ function stCompute(c: { ctx: nkruntime.Context; nk: nkruntime.Nakama; logger: nk
     }
 
     const out: any = { online: online, playing: playing, searching: searching, modes: modes, rng: rngMode(c.ctx), rules: refMode(c.ctx), entitlements: entMode(c.ctx) };
+    try {
+        out.gameModes = modeSummary(c.ctx, nk); // custom game modes offered here (modes.ts; full definitions: RPC COMMUNITAN_MODES)
+    } catch (e) { /* optional */ }
     try {
         const n = dataLoad(c.ctx, nk, "news.json");
         if (n.serverName) out.name = String(n.serverName);

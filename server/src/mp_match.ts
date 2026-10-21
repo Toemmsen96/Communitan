@@ -32,6 +32,8 @@ function mpMatchmaking(c: GsContext): any {
     const r = c.req;
     if (r.action === "cancel" || !r.matchId) return {};
     rngRequireCaps(c);
+    // game mode (modes.ts): validated + caps-gated before the match record exists; matched tickets all share it (hook)
+    const mode = modeResolve(c, ((r.participantData && r.participantData.gameInformation) || {}).ccsMode);
     const matchId: string = r.matchId;
     const ptr = mpUserGet(c.nk, c.userId);
     if (ptr.challengeId && ptr.challengeId !== matchId) mpExitSession(c, ptr.challengeId); // stale game must not answer the handshake poll
@@ -47,6 +49,7 @@ function mpMatchmaking(c: GsContext): any {
         gi.sortedPlayerIds = ids;
         gi.challengeId = matchId;
         mpFreeplayShuffle(c.ctx, gi);
+        modeApply(gi, mode); // after the shuffle: the mode's gameInfo wins
         return { matchId: matchId, ids: ids, gameInfo: gi, shortCode: r.matchShortCode || "", created: Date.now() };
     })!;
     // MatchmakingRequest is a durable request: the client persists it and replays it after a restart. A replay for an
@@ -85,6 +88,15 @@ function mpCreateChallenge(c: GsContext): any {
     if (!seats.length) seats = humans.slice();
     const spectator = gi.spectatorId && humans.indexOf(gi.spectatorId) >= 0 && seats.indexOf(gi.spectatorId) < 0 ? gi.spectatorId : undefined;
     for (const u of humans) if (u !== spectator && seats.indexOf(u) < 0) seats.push(u); // ASSUMPTION: unseated human gets the next seat
+    // game mode (modes.ts): a Free Play match record (match id = challenge id) decides it, else the creator's gameInfo.ccsMode
+    const mm = mpGet(c.nk, MP_MATCHES, id);
+    const mode = modeResolve(c, mm && mm.gameInfo ? mm.gameInfo.ccsMode : gi.ccsMode);
+    if (mode) {
+        const exps: string[] = gi.expansions || [];
+        if (exps.length !== mode.expansions.length || exps.some((e) => mode.expansions.indexOf(e) < 0)) gsFail({ errorCode: RNG_ERR_CAPS, customErrorMessage: "Game mode " + mode.name + " is played with " + mode.expansions.join(", ") + " only." });
+        if (seats.length < mode.players.min || seats.length > mode.players.max) gsFail({ errorCode: RNG_ERR_CAPS, customErrorMessage: "Game mode " + mode.name + " needs " + mode.players.min + "-" + mode.players.max + " players." });
+    }
+    modeApply(gi, mode);
     const cli = [sd.seed | 0, sd.colorSeed | 0, sd.diceSeed === undefined ? -1 : sd.diceSeed | 0];
     rngRequireCaps(c);
     const rng = rngMode(c.ctx);

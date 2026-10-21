@@ -1,7 +1,7 @@
 // Domain handler tables, merged in order (later wins). Built lazily: files load alphabetically.
 function gsTables(): GsHandlerTable[] {
     return [ACCOUNT_HANDLERS, CONTENT_HANDLERS, ITEMS_HANDLERS, RANKING_HANDLERS, SHOP_HANDLERS, SOCIAL_FRIEND_HANDLERS, SOCIAL_GUILD_HANDLERS, SOCIAL_MAIL_HANDLERS,
-        MP_MATCH_HANDLERS, MP_LOBBY_HANDLERS, MP_GAME_HANDLERS, STATUS_HANDLERS, ENTITLEMENT_HANDLERS];
+        MP_MATCH_HANDLERS, MP_LOBBY_HANDLERS, MP_GAME_HANDLERS, STATUS_HANDLERS, ENTITLEMENT_HANDLERS, MODE_HANDLERS];
 }
 
 // Nakama's JS runtime extracts handlers from InitModule's AST: registrations must be literal calls here.
@@ -11,6 +11,7 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     logger.info("server rng: %s", rngMode(ctx));
     refLogMode(ctx, logger);
     entLogMode(ctx, logger);
+    modeLogList(ctx, logger, nk);
 
     initializer.registerBeforeAuthenticateEmail(beforeAuthenticateEmail);
     initializer.registerBeforeAuthenticateDevice(beforeAuthenticateDevice);
@@ -22,6 +23,8 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     initializer.registerRtBefore("MatchmakerAdd", stBeforeMatchmakerAdd);
     initializer.registerRtBefore("MatchmakerRemove", stBeforeMatchmakerRemove);
     initializer.registerMatchmakerMatched(stMatchmakerMatched);
+    // Custom game modes offered by this server (modes.ts; public like the status)
+    initializer.registerRpc("COMMUNITAN_MODES", rpcModes);
     // Mod -> custom server: mirrored official purchases (entitlements.ts, CATAN_ENTITLEMENTS=owned)
     initializer.registerRpc("COMMUNITAN_ENTITLEMENTS_CLAIM", rpcDispatch);
 
