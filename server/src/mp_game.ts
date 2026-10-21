@@ -64,11 +64,22 @@ function mpAction(c: GsContext, turntimer: boolean): any {
             blob = res.blob!;
             rec = res.r;
         }
+        // L3 inline (enforce): an action the rules would not have produced is never stored or relayed; sender kicked (referee.ts)
+        const bad = refCheckAction(c, s, blob, rec);
+        if (bad) {
+            refKickInline(c, s, bad, fx);
+            fx.fail = MP_ERR.kicked;
+            return {};
+        }
         const ck = Math.floor(idx / MP_CHUNK);
         const key = s.id + "#" + ck;
         const cur = chunkOf(idx);
         const chunk = cur ? JSON.parse(JSON.stringify(cur.value)) : { gen: s.gen, a: [] };
         chunk.a[idx - ck * MP_CHUNK] = blob;
+        if (refMode(c.ctx) !== "off") {
+            chunk.s = chunk.s || [];
+            chunk.s[idx - ck * MP_CHUNK] = c.userId; // sender: an invalid action is charged to it (referee.ts)
+        }
         if (rec) {
             chunk.r = chunk.r || [];
             chunk.r[idx - ck * MP_CHUNK] = rec;
@@ -124,21 +135,22 @@ function mpDetails(c: GsContext, s: MpSession): any {
     return d;
 }
 
-// Stored blobs in order (+ per-action rng records for "full" sessions, same order).
-function mpActions(c: GsContext, s: MpSession): { a: string[]; r: (RngRec | null)[] } {
+// Stored blobs in order (+ per-action rng records for "full" sessions and senders when rules are on, same order).
+function mpActions(c: GsContext, s: MpSession): { a: string[]; r: (RngRec | null)[]; by: (string | null)[] } {
     const keys: nkruntime.StorageReadRequest[] = [];
     for (let i = 0; i * MP_CHUNK < s.nActions; i++) keys.push({ collection: MP_ACTIONS, key: s.id + "#" + i, userId: STORE_SYSTEM_USER });
     const byKey: { [k: string]: any } = {};
     if (keys.length) for (const o of c.nk.storageRead(keys)) if (o.value.gen === s.gen) byKey[o.key] = o.value;
-    const out: string[] = [], recs: (RngRec | null)[] = [];
+    const out: string[] = [], recs: (RngRec | null)[] = [], by: (string | null)[] = [];
     for (const k of keys) {
         const v = byKey[k.key] || { a: [] };
         for (let i = 0; i < v.a.length; i++) {
             out.push(v.a[i]);
             recs.push((v.r && v.r[i]) || null);
+            by.push((v.s && v.s[i]) || null);
         }
     }
-    return { a: out.slice(0, s.nActions), r: recs.slice(0, s.nActions) };
+    return { a: out.slice(0, s.nActions), r: recs.slice(0, s.nActions), by: by.slice(0, s.nActions) };
 }
 
 // "full" sessions: clients without the mod capability must not play (they would desync); clear popup instead.
@@ -181,13 +193,15 @@ function mpRelay(c: GsContext, ext: string, data: (s: MpSession) => any, to?: (s
     });
 }
 
-function mpEloRows(c: GsContext, s: MpSession, fx: MpFx): any[] {
+// adjust: L3 referee in enforce mode (referee.ts refRanks) replaces/corrects the client's ranks before ELO.
+function mpEloRows(c: GsContext, s: MpSession, fx: MpFx, adjust?: (rank: { [id: string]: number }) => void): any[] {
     const r = c.req;
     const wl: any[] = (r.WIN_LOSE && r.WIN_LOSE.win_lose) || [];
     const vp = (e: any) => +(e.victorypoints !== undefined ? e.victorypoints : e.vp) || 0;
     const sorted = wl.slice().sort((a, b) => vp(b) - vp(a));
     const rank: { [id: string]: number } = {};
     for (const e of wl) rank[e.playerId] = e.rank !== undefined ? e.rank | 0 : sorted.filter((x) => vp(x) > vp(e)).length + 1;
+    if (adjust) adjust(rank);
     let exp: string = r.EXPANSION || ((s.gameInfo.expansions || [])[0]) || "CatanBaseGame";
     const mt = s.gameInfo.matchType;
     const ranked = mt === "AUTO_MATCH" || mt === "QUICK_MATCH"; // ASSUMPTION: custom matches are unranked
@@ -235,11 +249,12 @@ function mpWon(c: GsContext): any {
         return {};
     }
     if (!r.CHALLENGE_ID) return {};
+    const l3 = refJudge(c, r.CHALLENGE_ID); // L3 referee (referee.ts): replay + verdict before ranking; null = rules off
     mpMutate<MpSession>(c.nk, MP_SESSIONS, r.CHALLENGE_ID, (s, fx) => {
         if (!s || s.state === "COMPLETED") return null; // idempotent (durable retries, several senders)
         const now = Date.now();
         const data = {
-            challengeId: s.id, win_lose: mpEloRows(c, s, fx), gameInfo: { isSeason: !!s.gameInfo.isSeason, sortedPlayerIds: s.seats },
+            challengeId: s.id, win_lose: mpEloRows(c, s, fx, refRanks(c, s, l3)), gameInfo: { isSeason: !!s.gameInfo.isSeason, sortedPlayerIds: s.seats },
             startDate: new Date(s.created).toISOString(), endDate: new Date(now).toISOString(),
         };
         rankingRecordGame(c.nk, c.logger, s, r.EXPANSION, data.win_lose, fx); // RANKING (ranking.ts): leaderboards, season fields, LEVEL_PROGRESS
@@ -247,8 +262,9 @@ function mpWon(c: GsContext): any {
         s.ended = now;
         s.result = data;
         const notify = mpActive(s);
+        const cheater = refPunish(c, s, l3, fx); // enforce: kick reason + cheat record, keeps the cheater's kicked pointer
         const ptrs = c.nk.storageRead(notify.map((u) => ({ collection: MP_USERS, key: "current", userId: u })));
-        for (const o of ptrs) if (o.value.challengeId === s.id) mpUserPut(fx, o.userId, {});
+        for (const o of ptrs) if (o.value.challengeId === s.id && o.userId !== cheater) mpUserPut(fx, o.userId, {});
         // Persist only for offline participants (drained at their next login). Persisted copies are never deleted by a
         // client that got the live push, so online players would see the old result again at every later login.
         const online: { [id: string]: boolean } = {};

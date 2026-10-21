@@ -143,7 +143,7 @@ function stCompute(c: { ctx: nkruntime.Context; nk: nkruntime.Nakama; logger: nk
         mode(x.mode).searching++;
     }
 
-    const out: any = { online: online, playing: playing, searching: searching, modes: modes, rng: rngMode(c.ctx), entitlements: entMode(c.ctx) };
+    const out: any = { online: online, playing: playing, searching: searching, modes: modes, rng: rngMode(c.ctx), rules: refMode(c.ctx), entitlements: entMode(c.ctx) };
     try {
         const n = dataLoad(c.ctx, nk, "news.json");
         if (n.serverName) out.name = String(n.serverName);

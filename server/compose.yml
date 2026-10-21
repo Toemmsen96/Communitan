@@ -2,6 +2,8 @@
 # Secrets come from ./.env (create it with ../tools/server-init.sh or copy .env.example).
 # Without .env the INSECURE public dev defaults below are used (and a warning is logged).
 # HTTPS: set DOMAIN in .env and add --profile https (see docs/HOSTING.md).
+# L3 referee (server-side rules, optional, repo checkout only): run ../tools/referee-setup.sh with your own game install,
+# set CATAN_SERVER_RULES=audit|enforce in .env and add --profile referee (docs/design/level3-referee.md).
 services:
   postgres:
     image: docker.io/library/postgres:16-alpine
@@ -37,6 +39,10 @@ services:
       # off (default): the game creator's client picks the board/dice/color seeds; seeds: the server picks them;
       # full: seeds + server dice and server-decided steals/cards, clients need a current mod (docs/design/server-rng.md)
       CATAN_SERVER_RNG: ${CATAN_SERVER_RNG:-off}
+      # off (default); audit: the referee replays every finished game and records its verdict; enforce: + its result
+      # replaces the client's, cheaters lose and are flagged. Needs the referee (--profile referee or CATAN_REFEREE_URL)
+      CATAN_SERVER_RULES: ${CATAN_SERVER_RULES:-off}
+      CATAN_REFEREE_URL: ${CATAN_REFEREE_URL:-http://referee:8790}
       # free (default): what a free official account has; owned: + each player's own official purchases (docs/HOSTING.md)
       CATAN_ENTITLEMENTS: ${CATAN_ENTITLEMENTS:-free}
       # off (default): base-game Free Play uses the game's fixed "First Island" board; on: shuffled board every game
@@ -61,6 +67,8 @@ services:
           --console.signing_key "$$CONSOLE_SIGNING_KEY" \
           --runtime.env "CATAN_EMAIL_VERIFICATION=$$CATAN_EMAIL_VERIFICATION" \
           --runtime.env "CATAN_SERVER_RNG=$$CATAN_SERVER_RNG" \
+          --runtime.env "CATAN_SERVER_RULES=$$CATAN_SERVER_RULES" \
+          --runtime.env "CATAN_REFEREE_URL=$$CATAN_REFEREE_URL" \
           --runtime.env "CATAN_ENTITLEMENTS=$$CATAN_ENTITLEMENTS" \
           --runtime.env "CATAN_SHUFFLE_FREEPLAY=$$CATAN_SHUFFLE_FREEPLAY" \
           "$$@"
@@ -74,6 +82,17 @@ services:
       - "${NAKAMA_BIND:-0.0.0.0}:7350:7350"
       - "127.0.0.1:7349:7349"
       - "127.0.0.1:7351:7351"
+  referee:
+    # internal network only (no ports). Built + game files from ../tools/referee-setup.sh (never committed)
+    profiles: ["referee"]
+    image: mcr.microsoft.com/dotnet/runtime:8.0
+    restart: unless-stopped
+    environment:
+      GLIBC_TUNABLES: glibc.rtld.execstack=2
+    command: ["dotnet", "/referee/bin/Referee.dll", "serve", "--game", "/referee/game", "--bind", "0.0.0.0", "--port", "8790"]
+    volumes:
+      - ../referee/bin/publish:/referee/bin:ro
+      - ../referee/game:/referee/game:ro
   caddy:
     profiles: ["https"]
     image: docker.io/library/caddy:2

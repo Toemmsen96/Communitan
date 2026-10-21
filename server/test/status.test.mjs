@@ -38,7 +38,7 @@ async function mkUser(tag) {
 async function main() {
     console.log("== public endpoint");
     let s = await status();
-    ok(typeof s.online === "number" && typeof s.playing === "number" && typeof s.searching === "number" && typeof s.modes === "object" && ["off", "seeds", "full"].includes(s.rng), "GET unwrap returns counts: " + JSON.stringify(s));
+    ok(typeof s.online === "number" && typeof s.playing === "number" && typeof s.searching === "number" && typeof s.modes === "object" && ["off", "seeds", "full"].includes(s.rng) && ["off", "audit", "enforce"].includes(s.rules), "GET unwrap returns counts: " + JSON.stringify(s));
     let r = await fetch(`${BASE}/v2/rpc/COMMUNITAN_STATUS?http_key=${encodeURIComponent(HTTP_KEY)}&unwrap`, { method: "POST", body: "" });
     ok(r.ok && typeof (await r.json()).online === "number", "POST unwrap (empty body) works");
     r = await fetch(`${BASE}/v2/rpc/COMMUNITAN_STATUS?http_key=wrong-key&unwrap`);

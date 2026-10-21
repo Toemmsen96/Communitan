@@ -25,6 +25,7 @@ interface MpSession {
     seats: string[]; humans: string[]; spectatorId?: string; hostIdx: number;
     nActions: number; lastPlayed: { [seat: string]: number }; tt: { [seat: string]: number }; ctx: any; recent: string[];
     ready: string[]; startedIds: string[]; logicStarted: boolean;
+    l3?: string; // inline referee stopped for this session (referee.ts refCheckAction): reason
     pres: { [userId: string]: MpPres }; muted: { [userId: string]: string[] }; result?: any;
 }
 
@@ -214,7 +215,8 @@ function mpKick(s: MpSession, userId: string, reason: string, voluntary: boolean
     p.kicked = reason;
     delete p.paused;
     mpElectHost(s);
-    fx.script(notify, "GAME_PLAYER_WAS_KICKED", { challengeId: s.id, playerId: userId, hostIdx: s.hostIdx });
+    // ccsKickReason: custom field (the client has no reason here); the mod shows a matching text (Communitan/KickReasonText.cs)
+    fx.script(notify, "GAME_PLAYER_WAS_KICKED", { challengeId: s.id, playerId: userId, hostIdx: s.hostIdx, ccsKickReason: reason });
     if (reason === "AFK_3X_TURNTIMER") fx.script([userId], "GAME_PLAYER_AFK_KICKED", { challengeId: s.id });
     mpUserPut(fx, userId, voluntary ? {} : { kicked: { challengeId: s.id, reason: reason } });
 }

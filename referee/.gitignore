@@ -1,0 +1,6 @@
+# Output of tools/referee-setup.sh from the operator's own game install: never commit or redistribute.
+game/
+bin/
+obj/
+stubber/bin/
+stubber/obj/

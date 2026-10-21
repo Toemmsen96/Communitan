@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- L3 referee (docs/design/level3-referee.md). Compiles against the files tools/referee-setup.sh writes from the
+       operator's own game install (default referee/game/, git-ignored); game assemblies are loaded from there at runtime
+       (Private=false: never copied into the build output). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NoWarn>CS1701;CS1702;MSB3277;CS0618</NoWarn>
+    <RefereeGame Condition="'$(RefereeGame)' == ''">$(MSBuildProjectDirectory)/game</RefereeGame>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" HintPath="$(RefereeGame)/Managed/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(RefereeGame)/Managed/Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(RefereeGame)/Managed/UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(RefereeGame)/Managed/UnityEngine.CoreModule.dll" Private="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="stubber/**;setup/**;test/**;game/**;bin/**;obj/**" />
+  </ItemGroup>
+</Project>

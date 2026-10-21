@@ -9,6 +9,7 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     gsInit();
     logger.info("email verification: %s", accVerifyOff(ctx) ? "off" : "ingame");
     logger.info("server rng: %s", rngMode(ctx));
+    refLogMode(ctx, logger);
     entLogMode(ctx, logger);
 
     initializer.registerBeforeAuthenticateEmail(beforeAuthenticateEmail);
