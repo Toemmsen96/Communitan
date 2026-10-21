@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Communitan</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>Communitan</h1>
+    <span class="sub">Catan Universe server</span>
+  </header>
+
+  <ul id="servers" class="servers"></ul>
+  <p id="reload" class="note" hidden>Reload the game tab to switch servers.</p>
+
+  <section id="warning" class="warning" hidden>
+    <strong>Community server</strong>
+    <p>This server is run by someone else, not by USM / CATAN GmbH. It can see your IP, email, password, name,
+      chats and matches. Never use your official Catan login or a password you use anywhere else.
+      Progress does not carry over between servers.</p>
+    <p id="warning-http" hidden><strong>Not encrypted:</strong> everything, including your password, is sent in plain text.</p>
+    <div class="row">
+      <button id="warning-ok" class="primary">I understand, use it</button>
+      <button id="warning-cancel">Cancel</button>
+    </div>
+  </section>
+
+  <form id="form" class="form" hidden>
+    <h2 id="form-title">Add server</h2>
+    <label>Name <input id="f-name" required maxlength="40" autocomplete="off"></label>
+    <label>Address <input id="f-address" required placeholder="host:port or https://host" autocomplete="off"></label>
+    <label>Server key <input id="f-key" placeholder="defaultkey" autocomplete="off"></label>
+    <p id="f-error" class="error" hidden></p>
+    <div class="row">
+      <button type="submit" class="primary">Save</button>
+      <button type="button" id="f-delete" class="danger" hidden>Remove</button>
+      <button type="button" id="f-cancel">Cancel</button>
+    </div>
+  </form>
+
+  <footer class="row">
+    <button id="add">Add server</button>
+    <button id="import" title="Import Communitan.servers.json from the game mod">Import</button>
+    <button id="export" title="Save the list as Communitan.servers.json">Export</button>
+    <input id="import-file" type="file" accept=".json,application/json" hidden>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -15,6 +15,7 @@ Plan + status: [PLAN.md](PLAN.md). Protocol specs: [docs/protocol/](docs/protoco
 - `server/` Nakama TS runtime module + podman compose (Postgres + Nakama). Our reimplementation of the official backend.
 - `docs/protocol/` specs extracted from decomp/captures (source of truth for server work).
 - `tools/` scripts (build, install BepInEx, run game headless, capture).
+- `browser-extension/` Chrome+Firefox MV3 extension: redirects the web game (catanuniverse.com/game/) to a custom server. `npm run build` / `npm test`; see its README.
 
 ## Protocol in one paragraph
 Client uses Nakama .NET SDK 3.17 wrapped in a **GameSparks emulation layer** (`Nakama.Core/NakamaConnection.cs`, `NakamaInstance.cs`).
