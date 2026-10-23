@@ -131,8 +131,11 @@ req: {PRODUCT_ID_LIST:"id1,id2", STEAM_ID} · resp: `result:[{id, displayPrice, 
 ### PAYMENT_UPDATE_PURCHASE
 req: {CURRENCY, PRICE, TRANSID} · resp: none read (errors -> OnError) · src: `NS:4194`; analytics-style, sent after coin purchase success. Return `{}`.
 
-### PAYMENT_FINALIZE_UNITY_BUY / PAYMENT_GET_PAYMENTWALL_PRODUCT_PRICE
-dead (UnityPayment unused: `Common.Payment/UnityPayment.cs:165` has no instantiation; PaymentWall wrappers `NS:4124,4159` have no callers). `ACCOUNT_GET_PAYMENTWALL_INFOS` (`NS:3874`) dead too.
+### PAYMENT_FINALIZE_UNITY_BUY
+dead (UnityPayment unused: `Common.Payment/UnityPayment.cs:165` has no instantiation).
+
+### PAYMENT_GET_PAYMENTWALL_PRODUCT_PRICE / ACCOUNT_GET_PAYMENTWALL_INFOS
+kind: LogEvent · web build only (desktop wrappers `NS:4124,4159`, `NS:3874` have no callers; the WebGL build calls both at startup/shop) · req: `{PRODUCT_ID_LIST:"id1,id2", COUNTRY_CODE}` / `{}` · resp: `result:[{id, amount, currency}]` (single-id variant `.Single()`, empty -> callback(null)) / `{email, creationDate:long, countryCode}` · ours: `result:[]` / empty values (nothing sold, no buyer data).
 
 ## 6. ITEM_*
 

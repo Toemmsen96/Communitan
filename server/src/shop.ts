@@ -19,6 +19,9 @@ const SHOP_HANDLERS: GsHandlerTable = {
     SHOP_GET_DISCOUNT_OR_NEW_OFFERS: () => ({ result: { new: {}, discount: {} } }),
     SHOP_FIND_CATEGORY_WITH_SET_COLLECTION: () => ({ category: "", products: [] }),
     PAYMENT_GET_STEAM_PRODUCT_PRICE: (c) => ({ result: entMode(c.ctx) === "dev" ? shopData(c).prices : [] }),
+    // Web build only (Paymentwall checkout; dead on desktop): no prices, no buyer data.
+    PAYMENT_GET_PAYMENTWALL_PRODUCT_PRICE: () => ({ result: [] }),
+    ACCOUNT_GET_PAYMENTWALL_INFOS: () => ({ email: "", creationDate: 0, countryCode: "" }),
     // Never grants anything. dev keeps the old "already owned" echo for expansions.
     SHOP_BUY_OFFER: (c) => {
         const id = String(c.req.OFFERCODE || "");
