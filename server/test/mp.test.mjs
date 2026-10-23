@@ -372,7 +372,7 @@ async function rngFlow() {
     const [a, b, x] = [await mkUser("ra"), await mkUser("rb"), await mkUser("rx")];
     x.caps = false;
     let r = await x.rpc("LOBBY_CREATE", { GAME_INFO: { matchType: "CUSTOM_MATCH" } });
-    ok(errCode(r) === 110 && /update the Communitan mod/i.test(r.error.customErrorMessage || ""), "no mod capability -> LOBBY_CREATE refused with message");
+    ok(errCode(r) === 110 && /Communitan mod/i.test(r.error.customErrorMessage || ""), "no mod capability -> LOBBY_CREATE refused with message");
     r = await x.rpc("MatchmakingRequest", { matchShortCode: "FREEMATCH_2P", matchId: "m-" + RUN, playerIds: [x.id] });
     ok(errCode(r) === 110, "no mod capability -> MatchmakingRequest refused");
     const mk = async (id, gi) => {

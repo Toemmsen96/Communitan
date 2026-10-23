@@ -243,7 +243,7 @@ async function lobby() {
     // a member's later request without the capability (old mod) blocks updates/start of the mode game
     await a.rpc("LOBBY_PLAYER_IS_READY", { LOBBY_ID, IS_READY: 1 }, false, NOMODE());
     r = await h.rpc("LOBBY_UPDATE_GAME_INFO", { LOBBY_ID, GAME_INFO: gi("robbers"), REMOVE_PLAYER_ID: "-" });
-    ok(errCode(r) === 110 && /must update/i.test(r.error.customErrorMessage || ""), "member without modes-1 -> mode refused, names the member");
+    ok(errCode(r) === 110 && /need the current Communitan desktop mod/i.test(r.error.customErrorMessage || ""), "member without modes-1 -> mode refused, names the member");
     r = await h.rpc("LOBBY_UPDATE_GAME_INFO", { LOBBY_ID, GAME_INFO: gi(null), REMOVE_PLAYER_ID: "-" });
     p = await push(a, "LOBBY_UPDATE_GAMEINFO");
     ok(!r.error && p && p.data.ccsMode === undefined, "Standard (no mode) still possible with that member");
@@ -269,7 +269,7 @@ async function lobby() {
     r = await b.rpc("LOBBY_ACCEPT", { LOBBY_ID: L2 }, false, NOMODE());
     ok(!r.error, "unmodded player joins a plain lobby");
     r = await h.rpc("LOBBY_UPDATE_GAME_INFO", { LOBBY_ID: L2, GAME_INFO: gi("robbers"), REMOVE_PLAYER_ID: "-" });
-    ok(errCode(r) === 110 && /must update/i.test(r.error.customErrorMessage || ""), "plain lobby with an unmodded member: mode refused");
+    ok(errCode(r) === 110 && /need the current Communitan desktop mod/i.test(r.error.customErrorMessage || ""), "plain lobby with an unmodded member: mode refused");
     for (const u of [h, a, b]) { await u.rpc("LOBBY_LEAVE", { LOBBY_ID }); await u.rpc("LOBBY_LEAVE", { LOBBY_ID: L2 }); }
 }
 

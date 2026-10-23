@@ -25,6 +25,7 @@ Web build facts (2026-10-21, build `77fe79715`, Unity 2022.3.62f3): game canvas 
 Nakama HTTP via global `fetch` (UnityWebRequest), socket via `new WebSocket` (Nakama jslib); same backend and key as desktop.
 
 ## Limits / todo
+- **No online games on servers with server dice (`CATAN_SERVER_RNG=full`) or game modes.** Those need every client to apply the server's dice the same way, which the desktop mod does by patching the game code; the WebGL build can't be patched, so the server refuses it ("needs the current Communitan desktop mod"). Servers with `off` or `seeds` work.
 - **http servers only work on localhost.** The game page is https, so browsers block plain-http requests to other hosts (mixed content).
   Use an https server (`server/` Caddy profile, docs/HOSTING.md). Todo: relay http through the extension background.
 - Local/LAN servers: the browser asks once "allow access to other apps and services on this device" → **Allow**. page.js touches

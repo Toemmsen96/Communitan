@@ -103,7 +103,7 @@ export function describeStatus(s) {
   if (!s || typeof s !== "object") return "";
   const parts = [`${s.online ?? 0} online`, `${s.playing ?? 0} playing`, `${s.searching ?? 0} searching`];
   if (s.rng === "seeds") parts.push("server seeds");
-  if (s.rng === "full") parts.push("server dice");
+  if (s.rng === "full") parts.push("server dice (online games need the desktop mod)");
   if (s.rules === "audit") parts.push("rules audited");
   if (s.rules === "enforce") parts.push("rules enforced");
   if (s.entitlements === "free") parts.push("free tier");

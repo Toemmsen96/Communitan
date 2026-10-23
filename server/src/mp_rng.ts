@@ -9,7 +9,7 @@
 
 const RNG_CAPS = "rng-full-1";
 const RNG_ERR_CAPS = 110; // UnableToUpdateMultiplayerProgress: shown as a popup with customErrorMessage
-const RNG_CAPS_MSG = "This server rolls the dice itself (server dice). Update the Communitan mod to play here.";
+const RNG_CAPS_MSG = "This server rolls the dice itself (server dice). Online games here need the current Communitan mod for the desktop game; the browser version can't play them.";
 const RNG_ROLL_IDS: { [catanActionId: number]: number } = { 3: 2, 151: 3 }; // Base_RollDice: 2 dice, Cak_RollDice: 2 + event die
 const RNG_ALCHEMIST = 210; // Cak_PlayProgressCard_Alchemist: player picks both production dice, the event die is rolled
 

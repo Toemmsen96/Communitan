@@ -48,7 +48,7 @@ The server never sends email (no SMTP support yet).
 `CATAN_SERVER_RNG` in `.env` (then `docker compose up -d`). The mod's server list shows "server seeds" or "server dice".
 - `off` (default): the creator's client picks the board, dice and color seeds, as in the original game.
 - `seeds`: the server picks them for every new online game. A modified game client can no longer choose a seed it likes (a known board or dice sequence). This does **not** stop a modified client from faking a roll or seeing upcoming rolls.
-- `full`: `seeds`, plus the server rolls every die (also the C&K event die and the Alchemist's event die) and hands out a fresh random value with every move, which decides robber steals, development cards, progress cards and Seafarers treasures/fog tiles at the moment they happen. No client can predict or choose them. **Every player needs a current mod**: clients without it get "update the Communitan mod" and cannot start or join games (they would go out of sync). Games started before switching keep their old mode.
+- `full`: `seeds`, plus the server rolls every die (also the C&K event die and the Alchemist's event die) and hands out a fresh random value with every move, which decides robber steals, development cards, progress cards and Seafarers treasures/fog tiles at the moment they happen. No client can predict or choose them. **Every player needs a current mod**: clients without it, including the **browser version** (its game code can't be patched), get a "needs the current Communitan desktop mod" message and cannot start or join online games (they would go out of sync). Use `seeds` if browser players should play online. Games started before switching keep their old mode.
 - Limits of `full`: every game client still holds the whole game state (a modified client can see other hands and the remaining cards), and other move details are not checked by the server. See [design/server-rng.md](design/server-rng.md).
 
 ## Server-side rules (anti-cheat, optional)
@@ -76,7 +76,7 @@ The game's base-game Free Play always uses the fixed "First Island" board (the c
 ## Game modes (custom rules)
 `data/modes/<id>.json` (listed in `data/modes/index.json`, read at first use; restart Nakama after edits) offers
 **game modes**: base game with a few rule switches, e.g. `robbers` (every roll is a 7, each round every player gets
-2 random resources). Players need a current mod (others get "update the Communitan mod"); mode games are **unranked**
+2 random resources). Players need a current desktop mod (others, including the browser version, get a "needs the current Communitan desktop mod" message); mode games are **unranked**
 (no ELO, season or leaderboard changes; profile statistics still count) and have their own Free Play queue per mode.
 Modes are listed in the status (`gameModes`) and by RPC `COMMUNITAN_MODES`. Switches and file format:
 [design/game-modes.md](design/game-modes.md). The referee (L3) checks mode games with the same rules.

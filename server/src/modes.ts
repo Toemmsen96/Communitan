@@ -10,7 +10,7 @@
 //   - MatchmakerAdd hook (status.ts): tickets without a mode never match mode tickets; mode tickets only match their mode
 
 const MODE_CAPS = "modes-1";
-const MODE_CAPS_MSG = "This game uses a custom game mode. Update the Communitan mod to play it.";
+const MODE_CAPS_MSG = "This game uses a custom game mode. It needs the current Communitan mod for the desktop game; the browser version can't play it.";
 const MODE_UNKNOWN_MSG = "This server does not offer that game mode (any more).";
 const MODE_ID_RX = /^[a-z0-9_-]{1,32}$/;
 const MODE_GAMEINFO_KEYS = ["victoryPoints", "useShuffleMap", "friendlyRobber", "diceMode"];
@@ -154,7 +154,7 @@ function modeLobbyApply(c: GsContext, l: { members: string[]; modeCaps?: string[
         const missing = l.members.filter((u) => caps.indexOf(u) < 0);
         if (missing.length) {
             const names = c.nk.usersGetId(missing).map((u) => u.displayName || u.username);
-            gsFail({ errorCode: RNG_ERR_CAPS, customErrorMessage: "Game mode " + mode.name + ": " + names.join(", ") + " must update the Communitan mod first." });
+            gsFail({ errorCode: RNG_ERR_CAPS, customErrorMessage: "Game mode " + mode.name + ": " + names.join(", ") + " need the current Communitan desktop mod (the browser version can't play game modes)." });
         }
         const seats = (gi.sortedPlayerIds || l.members).length;
         if (start && (seats < mode.players.min || seats > mode.players.max)) gsFail({ errorCode: RNG_ERR_CAPS, customErrorMessage: "Game mode " + mode.name + " needs " + mode.players.min + "-" + mode.players.max + " players." });
