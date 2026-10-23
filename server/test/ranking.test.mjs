@@ -101,6 +101,8 @@ async function main() {
     ok(!r.error && Array.isArray(r["TOURNAMENT_AUTO.TOURNAMENT_ID.x"]) && r["TOURNAMENT_AUTO.TOURNAMENT_ID.x"].length === 0, "LeaderboardsEntries tournament -> []");
     r = await A.rpc("LEADERBOARD_GET_BRACKETS_BY_ID", { PLAYER_ID: A.id });
     ok(Array.isArray(sd(r).brackets) && Array.isArray(sd(r).rankPercentages), "BRACKETS_BY_ID shape");
+    r = await A.rpc("LEADERBOARD_GET_BRACKETS_BY_ID", { PLAYER_ID: "ai-player-2" });
+    ok(!r.error && Array.isArray(sd(r).brackets) && sd(r).rankPercentages.length === 0, "BRACKETS_BY_ID for an AI seat (no account id): empty, no error " + JSON.stringify(r.error || ""));
     for (const id of ["TOURNAMENT_GET_CONFIG", "TOURNAMENT_GET_LIST", "TOURNAMENT_GET_MY_LIST", "TOURNAMENT_GET_PARTICIPANTS", "TOURNAMENT_GET_GAME_RESULTS"]) ok(!(await A.rpc(id)).error, id);
     ok(sd(await A.rpc("TOURNAMENT_GET_CONFIG")).tournamentConfig.isFeatureEnabled === false, "tournaments disabled");
 

@@ -111,6 +111,7 @@ function rkTotal(nk: nkruntime.Nakama, id: string): number {
 }
 
 function rkRecord(nk: nkruntime.Nakama, id: string, userId: string): nkruntime.LeaderboardRecord | null {
+    if (!MP_UUID.test(userId)) return null; // AI seats / client-sent ids: Nakama throws on non-uuid owners
     const r = nk.leaderboardRecordsList(id, [userId], 1).ownerRecords || [];
     return r.length ? r[0] : null;
 }
@@ -401,6 +402,8 @@ const RANKING_HANDLERS: GsHandlerTable = {
     LEADERBOARD_GET_BRACKETS_BY_ID: (c) => {
         const id = String(c.req.PLAYER_ID || c.userId);
         const out: any[] = [];
+        // AI seats on the result screen have no account id (Nakama throws "expects a valid owner id"): no ranks.
+        if (!MP_UUID.test(id)) return { brackets: RK_BRACKETS, rankPercentages: out };
         for (const e of ACC_ELO_EXPANSIONS) {
             const lb = RK_LB_PLAYER + e;
             rkEnsure(c.nk, lb);
