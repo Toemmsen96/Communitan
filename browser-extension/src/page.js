@@ -22,6 +22,117 @@
 
   const log = (msg) => document.dispatchEvent(new CustomEvent("communitan:log", { detail: msg }));
 
+  // --- In-page notices over the game canvas (closed shadow root). The web game can't be patched like the desktop one,
+  // so what the mod adds to the game's screens (LoginHints.cs, RegisterFlow.cs) is shown here instead.
+  const notices = (() => {
+    const CSS = `
+      :host { all: initial; }
+      .hint, .modal { pointer-events: auto; font: 14px/1.4 system-ui, sans-serif; color: #efe6d8; }
+      .hint { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); max-width: calc(100vw - 32px);
+        display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; border-radius: 8px;
+        background: rgba(38, 33, 28, .92); border: 1px solid #e0b04f; box-shadow: 0 4px 16px rgba(0, 0, 0, .4); }
+      .hint b { color: #ffd45a; }
+      .backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); pointer-events: auto;
+        display: flex; align-items: center; justify-content: center; padding: 16px; }
+      .modal { width: min(420px, 100%); padding: 18px 20px; border-radius: 10px; background: #26211c;
+        border: 1px solid #3a322a; box-shadow: 0 8px 32px rgba(0, 0, 0, .5); }
+      h2 { margin: 0 0 8px; font-size: 17px; }
+      p { margin: 0 0 12px; color: #d8cdbd; }
+      .code { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+      .code span { flex: 1; padding: 8px 12px; border-radius: 6px; background: #1d1915; border: 1px solid #3a322a;
+        font: 600 26px/1.2 ui-monospace, monospace; letter-spacing: .25em; text-align: center; user-select: all; }
+      .actions { display: flex; justify-content: flex-end; }
+      button { font: inherit; padding: 6px 14px; border-radius: 5px; border: 1px solid #3a322a; background: #1d1915;
+        color: #efe6d8; cursor: pointer; }
+      button.primary { background: #e0704f; border-color: #e0704f; color: #1d1915; font-weight: 600; }
+      .hint button { padding: 2px 8px; }`;
+    let root = null;
+    let modal = null;
+
+    function shadow() {
+      if (root) return root;
+      const host = document.createElement("communitan-notices");
+      host.style.cssText = "all: initial; position: fixed; inset: 0; z-index: 2147483647; pointer-events: none;";
+      root = host.attachShadow({ mode: "closed" });
+      const style = document.createElement("style");
+      style.textContent = CSS;
+      root.append(style);
+      (document.body || document.documentElement).append(host);
+      return root;
+    }
+
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    function button(text, cls, onClick) {
+      const b = el("button", cls, text);
+      b.addEventListener("click", onClick);
+      return b;
+    }
+
+    let hint = null;
+
+    // Shown from page load until dismissed or logged in: the login and register screens are where passwords get typed,
+    // later it would only cover the game's bottom bar.
+    function passwordHint(name) {
+      try {
+        hint = el("div", "hint");
+        const text = el("span");
+        text.append(el("b", null, `Community server “${name}”`), " — do not use your official Catan password.");
+        hint.append(text, button("✕", null, loggedIn));
+        shadow().append(hint);
+      } catch (e) {
+        log(`cannot show the password hint: ${e}`);
+      }
+    }
+
+    function loggedIn() {
+      hint?.remove();
+      hint = null;
+    }
+
+    function show(title, text, code) {
+      try {
+        modal?.remove();
+        const backdrop = el("div", "backdrop");
+        const box = el("div", "modal");
+        box.append(el("h2", null, title), el("p", null, text));
+        if (code) {
+          const row = el("div", "code");
+          const copy = button("Copy", null, () =>
+            navigator.clipboard?.writeText(code).then(() => (copy.textContent = "Copied"), () => {}),
+          );
+          row.append(el("span", null, code), copy);
+          box.append(row);
+        }
+        const actions = el("div", "actions");
+        actions.append(button("OK", "primary", () => backdrop.remove()));
+        box.append(actions);
+        backdrop.append(box);
+        shadow().append(backdrop);
+        modal = backdrop;
+      } catch (e) {
+        log(`cannot show a notice: ${e}`);
+      }
+    }
+
+    // scriptData of ACCOUNT_RESEND_ACTIVATION_CODE.
+    function activation(sd) {
+      const code = typeof sd.code === "string" || typeof sd.code === "number" ? String(sd.code) : "";
+      if (code)
+        show("Activation code", "This community server sends no emails. Enter this code on the activation screen:", code);
+      else if (sd.delivery === "auto")
+        show("No activation needed", "This community server doesn't check activation codes: enter any 5 digits, e.g. 00000.");
+      else show("No activation code", "This community server sends no emails and returned no activation code. Ask its operator.");
+    }
+
+    return { passwordHint, loggedIn, activation };
+  })();
+
   document.addEventListener("communitan:config", (e) => {
     if (pinned) return;
     try {
@@ -34,6 +145,7 @@
     if (config.active && !warmed) {
       warmed = true;
       nativeFetch.call(window, config.url + "/healthcheck", { mode: "no-cors" }).catch(() => {});
+      notices.passwordHint(config.name);
     }
     resolveReady();
   });
@@ -98,7 +210,7 @@
       if (headers.has("authorization")) headers.set("authorization", fixAuth(headers.get("authorization")));
       const hasBody = req.method !== "GET" && req.method !== "HEAD";
       const body = hasBody ? await fixBody(u, await req.text()) : undefined;
-      return nativeFetch.call(window, retarget(u), {
+      const res = await nativeFetch.call(window, retarget(u), {
         method: req.method,
         headers,
         body,
@@ -107,8 +219,63 @@
         redirect: req.redirect,
         signal: req.signal,
       });
+      watchRpc(u, headers.get("authorization"), res);
+      return res;
     })();
   };
+
+  // --- Email activation (mod: RegisterFlow.cs). Community servers send no mail: ACCOUNT_RESEND_ACTIVATION_CODE returns
+  // the code to the logged-in caller ({code, delivery:"ingame"}, or {delivery:"auto"} = any code works). The game shows
+  // its activation screen when a response has scriptData.needsEmailVerification; the code is then fetched once per
+  // session and shown, and again whenever the game's own "resend" runs.
+  const RESEND = "ACCOUNT_RESEND_ACTIVATION_CODE";
+  let codeAskedFor = null; // Authorization header (session) the code was already fetched for
+
+  // Nakama RPC response {id, payload: GS response JSON string} -> scriptData, null on GS error / other shapes.
+  function scriptData(json) {
+    try {
+      const gs = typeof json.payload === "string" ? JSON.parse(json.payload) : json.payload;
+      return gs && typeof gs === "object" && !gs.error ? gs.scriptData || {} : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function watchRpc(u, auth, res) {
+    if (res.ok && u.pathname.includes("/v2/account/authenticate/")) notices.loggedIn();
+    const m = /\/v2\/rpc\/([^/]+)$/.exec(u.pathname);
+    if (!m || !res.ok) return;
+    const id = decodeURIComponent(m[1]);
+    res
+      .clone()
+      .json()
+      .then((json) => {
+        const sd = scriptData(json);
+        if (!sd) return;
+        if (id === RESEND) notices.activation(sd);
+        else if (sd.needsEmailVerification === true && auth && auth !== codeAskedFor) {
+          codeAskedFor = auth;
+          requestCode(auth);
+        }
+      })
+      .catch(() => {});
+  }
+
+  async function requestCode(auth) {
+    const req = { "@class": ".LogEventRequest", eventKey: RESEND, requestId: "communitan-" + Date.now() };
+    try {
+      const res = await nativeFetch.call(window, config.url + "/v2/rpc/" + RESEND, {
+        method: "POST",
+        headers: { Authorization: auth, "Content-Type": "application/json" },
+        body: JSON.stringify(JSON.stringify(req)),
+      });
+      const sd = res.ok ? scriptData(await res.json()) : null;
+      if (sd) notices.activation(sd);
+      else log(`activation code request failed (HTTP ${res.status})`);
+    } catch (e) {
+      log(`activation code request failed: ${e}`);
+    }
+  }
 
   // --- XMLHttpRequest
   // Normal case: config is known at open() -> rewrite synchronously. Config still pending (very early request):

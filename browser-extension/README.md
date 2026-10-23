@@ -16,7 +16,7 @@ Import/Export reads and writes the mod's `BepInEx/config/Communitan.servers.json
 ## How it works
 | File | Role |
 |---|---|
-| `src/page.js` | MAIN world, `document_start`: wraps `fetch`, `XMLHttpRequest`, `WebSocket`. Requests to `catan-{prod,qa,dev}N.*.nakamacloud.io` go to the selected server; Basic auth (server key) swapped; guest device id salted `sha256(id\|host:port)[0:40]` like the mod. Target pinned at first redirect → switching needs a reload. Official / no config within 5 s → pass-through |
+| `src/page.js` | MAIN world, `document_start`: wraps `fetch`, `XMLHttpRequest`, `WebSocket`. Requests to `catan-{prod,qa,dev}N.*.nakamacloud.io` go to the selected server; Basic auth (server key) swapped; guest device id salted `sha256(id\|host:port)[0:40]` like the mod. Target pinned at first redirect → switching needs a reload. Official / no config within 5 s → pass-through. In-page notices (closed shadow root, the mod's LoginHints/RegisterFlow): password hint bar from load until the first successful login or ✕; activation code dialog when an RPC answers `needsEmailVerification:true` (fetches `ACCOUNT_RESEND_ACTIVATION_CODE` once per session) and on the game's own "resend" |
 | `src/bridge.js` | isolated world: storage → page via DOM events (`communitan:hello` / `communitan:config` / `communitan:log`). Deletes a saved login made against another server (`/idbfs/<hash>/user.config` in IndexedDB `/idbfs`, before Unity mounts it); `storage.local.communitanAuthEndpoint` = endpoint it belongs to, none = Official |
 | `src/background.js`, `rules/analytics.json` | DNR ruleset `analytics` (GameAnalytics, Unity Analytics/UGS; only requests from catanuniverse.com) enabled while a custom server is selected |
 | `src/popup.*`, `src/servers.js` | server list, ping (`/healthcheck` + public `COMMUNITAN_STATUS`), community-server warning, import/export |
@@ -29,11 +29,11 @@ Nakama HTTP via global `fetch` (UnityWebRequest), socket via `new WebSocket` (Na
   Use an https server (`server/` Caddy profile, docs/HOSTING.md). Todo: relay http through the extension background.
 - Local/LAN servers: the browser asks once "allow access to other apps and services on this device" → **Allow**. page.js touches
   `/healthcheck` at page load so the prompt shows during the download (the game gives up after 30 s otherwise).
-- Web-only server gaps: `ACCOUNT_GET_PAYMENTWALL_INFOS`, `PAYMENT_GET_PAYMENTWALL_PRODUCT_PRICE` (UNHANDLED, harmless).
 
 ## Test
 - 2026-10-21, Firefox 158 headless (WebDriver BiDi): installs clean; Local → guest login, socket, RPCs, main menu, 0 requests
   to nakamacloud.io, salted device id, reload re-login; Official → untouched. Chrome and the popup UI not yet tested in a browser.
 - Same day, Firefox 158: analytics blocked on Local (NS_ERROR_ABORT) and reaching their servers on Official; Local→Official reload
   deletes the Local login (login screen, no auto re-login), Local reload keeps it; ruleset survives background suspend + extension reload.
-- `npm test` runs `src/page.js` in a fake page (Node `vm`) and checks the redirect, key swap, salting and pass-through.
+- 2026-10-23, Firefox headless (BiDi): Local → password hint on the login/register screens; email registration → activation code dialog right after "mail sent", again on "receive new activation code"; code accepted → main menu.
+- `npm test` runs `src/page.js` in a fake page (Node `vm`) and checks the redirect, key swap, salting, pass-through and notices.
