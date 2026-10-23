@@ -98,12 +98,14 @@ export async function ping(entry) {
   return { ok: true, ms, status };
 }
 
-// "5 online · 2 playing · 1 searching · server dice · free tier" (ServerPing.cs).
+// "5 online · 2 playing · 1 searching · server dice · rules enforced · free tier" (ServerPing.cs).
 export function describeStatus(s) {
   if (!s || typeof s !== "object") return "";
   const parts = [`${s.online ?? 0} online`, `${s.playing ?? 0} playing`, `${s.searching ?? 0} searching`];
   if (s.rng === "seeds") parts.push("server seeds");
   if (s.rng === "full") parts.push("server dice");
+  if (s.rules === "audit") parts.push("rules audited");
+  if (s.rules === "enforce") parts.push("rules enforced");
   if (s.entitlements === "free") parts.push("free tier");
   if (s.entitlements === "owned") parts.push("own purchases");
   return parts.join(" · ");

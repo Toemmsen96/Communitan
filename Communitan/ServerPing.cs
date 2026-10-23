@@ -15,7 +15,7 @@ namespace Communitan
             public bool Done;
             public bool Ok;
             public string Text = "pinging...";
-            // "5 online · 2 playing · 1 searching[ · server seeds| · server dice][ · free tier| · own purchases]" when the server answers COMMUNITAN_STATUS, else null (Official, older servers).
+            // "5 online · 2 playing · 1 searching[ · server seeds| · server dice][ · rules audited| · rules enforced][ · free tier| · own purchases]" when the server answers COMMUNITAN_STATUS, else null (Official, older servers).
             public string Counts;
         }
 
@@ -83,6 +83,7 @@ namespace Communitan
                     {
                         result.Counts = $"{status.Online} online · {status.Playing} playing · {status.Searching} searching"
                             + (status.Rng == "full" ? " · server dice" : status.Rng == "seeds" ? " · server seeds" : "")
+                            + (status.Rules == "enforce" ? " · rules enforced" : status.Rules == "audit" ? " · rules audited" : "")
                             + EntitlementsText(status.Entitlements);
                     }
                 }
@@ -123,6 +124,8 @@ namespace Communitan
         public readonly int Online, Playing, Searching;
         // Server RNG level (CATAN_SERVER_RNG, docs/design/server-rng.md): "off", "seeds" or "full"; "off" for older servers.
         public readonly string Rng;
+        // Server-side rules (CATAN_SERVER_RULES, docs/design/level3-referee.md): "off", "audit" or "enforce"; "off" for older servers.
+        public readonly string Rules;
         // Paid content (CATAN_ENTITLEMENTS): "free", "owned" (mirrors the player's official purchases, Entitlements.cs) or
         // "dev" (local testing unlock); null for older servers.
         public readonly string Entitlements;
@@ -134,6 +137,7 @@ namespace Communitan
             Playing = (int?)o["playing"] ?? 0;
             Searching = (int?)o["searching"] ?? 0;
             Rng = (string)o["rng"] ?? "off";
+            Rules = (string)o["rules"] ?? "off";
             Entitlements = (string)o["entitlements"];
             modes = o["modes"] as JObject;
         }
